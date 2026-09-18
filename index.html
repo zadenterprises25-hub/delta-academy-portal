@@ -72,8 +72,9 @@
     </div>
 
     <!-- Login Screen -->
-    <div id="loginScreen" class="absolute inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-gray-400 to-gray-600 no-print">
-        <div class="bg-gray-100 rounded-xl shadow-2xl w-[400px] overflow-hidden flex flex-col border border-gray-300/50">
+    <!-- Added pt-16 to move box to top, bg-cover to adjust background dynamically -->
+    <div id="loginScreen" class="absolute inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 bg-gradient-to-b from-gray-400 to-gray-600 no-print transition-all duration-500 bg-cover bg-center">
+        <div class="bg-gray-100 rounded-xl shadow-2xl w-[400px] overflow-hidden flex flex-col border border-gray-300/50 relative z-10">
             <div class="bg-gradient-to-b from-[#8f92a1] to-[#717386] p-10 text-center">
                 <h1 class="text-4xl font-bold text-white mb-2 tracking-wide drop-shadow-md">DELTA</h1>
                 <p class="text-[10px] font-bold text-gray-200 tracking-[0.25em] uppercase">B2B Academy Portal</p>
@@ -102,6 +103,8 @@
                 </div>
             </div>
         </div>
+        <!-- Dark overlay to ensure text is readable if image is too bright, optional -->
+        <div class="absolute inset-0 bg-black/10 pointer-events-none"></div>
     </div>
 
     <!-- Main Dashboard -->
@@ -121,6 +124,7 @@
                 <!-- Admin Controls -->
                 <div id="adminMenu" class="hidden space-y-1 mt-6">
                     <p class="text-[10px] font-bold text-slate-400 uppercase px-4 mb-2 tracking-widest">Admin Controls</p>
+                    <a href="#" onclick="showSection('layoutSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-image w-6 text-slate-300"></i> Layout Settings</a>
                     <a href="#" onclick="showSection('manageUsersSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-users w-6 text-slate-300"></i> Manage Users</a>
                     <a href="#" onclick="showSection('passwordManagerSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-key w-6 text-slate-300"></i> Passwords</a>
                     <a href="#" onclick="showSection('timetableAdminSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-clock w-6 text-slate-300"></i> Study Timetable</a>
@@ -183,6 +187,26 @@
                     <div class="absolute top-0 right-0 w-64 h-64 bg-slate-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 -mr-20 -mt-20"></div>
                     <h3 class="text-2xl font-bold mb-2 text-slate-700 relative z-10">Welcome to Delta Academy</h3>
                     <p class="text-slate-500 relative z-10">Select an option from the sidebar to manage your activities.</p>
+                </div>
+
+                <!-- Admin: Layout Settings -->
+                <div id="layoutSection" class="hidden no-print space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-emerald-500">
+                        <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-image mr-2 text-emerald-500"></i> Login Background Settings</h3>
+                        <p class="text-xs text-slate-500 mb-4">Upload a new background image for the login screen. It will be stored in your Google Drive securely.</p>
+                        <form id="layoutForm" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-2">Upload New Background Image</label>
+                                <div class="flex items-center space-x-4">
+                                    <img id="currentBgPreview" src="" class="hidden h-20 w-32 object-cover rounded shadow border border-slate-200">
+                                    <input type="file" id="bg_photo" accept="image/*" required class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                                </div>
+                            </div>
+                            <div class="flex justify-end pt-4 border-t">
+                                <button type="submit" id="saveLayoutBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded font-bold shadow text-sm"><i class="fas fa-save mr-1"></i> Update Background</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
                 <!-- Notifications Section -->
@@ -518,7 +542,7 @@
                     </div>
                 </div>
 
-                <!-- Admin & Teacher Activity Reports (Unchanged layout) -->
+                <!-- Admin & Teacher Activity Reports -->
                 <div id="activityAdminSection" class="hidden">
                     <div class="bg-white p-6 rounded-xl shadow-sm border"><div class="no-print flex justify-between mb-4"><h3 class="font-bold text-slate-700">Teachers Activity</h3><button onclick="window.print()" class="gradient-btn px-4 py-1 rounded text-sm">Print</button></div><div class="no-print grid grid-cols-3 gap-4 mb-4 bg-slate-50 p-4 rounded"><div><label class="text-xs font-bold">Teachers</label><div id="activityTeacherList" class="h-24 overflow-y-auto border bg-white p-2 text-sm space-y-1"></div></div><div><label class="text-xs font-bold">From</label><input type="date" id="filterStartDate" class="w-full border p-2 rounded text-sm"></div><div><label class="text-xs font-bold">To</label><input type="date" id="filterEndDate" class="w-full border p-2 rounded text-sm"></div><div class="col-span-3 flex justify-end"><button onclick="loadAdminActivityReport()" class="bg-slate-700 text-white px-4 py-2 rounded text-sm font-bold">Generate</button></div></div><div class="print-area"><div class="hidden print-header text-center mb-4"><h2 class="text-2xl font-bold">DELTA ACADEMY</h2><p>Activity Report</p></div><table class="min-w-full text-left text-sm border-collapse border"><thead class="bg-slate-100 font-bold text-xs uppercase"><tr><th class="border p-2">Date</th><th class="border p-2">Teacher</th><th class="border p-2">Institution</th><th class="border p-2">Subject</th><th class="border p-2">Mode</th></tr></thead><tbody id="adminActivityTableBody"></tbody></table></div></div>
                 </div>
@@ -533,7 +557,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDKixgUCldwZUv51wqiTQjlXFl1U_Q1b5M",
@@ -568,7 +592,7 @@
 
         // Routing
         window.showSection = (sectionId) => {
-            ['welcomeSection', 'manageUsersSection', 'passwordManagerSection', 'assignClassesSection', 'assignedClassesViewSection', 'activityAdminSection', 'activityTeacherSection', 'notificationsSection', 'timetableAdminSection', 'timetableStudentSection', 'examsAdminSection', 'examsViewSection', 'doubtsSection'].forEach(id => {
+            ['welcomeSection', 'layoutSection', 'manageUsersSection', 'passwordManagerSection', 'assignClassesSection', 'assignedClassesViewSection', 'activityAdminSection', 'activityTeacherSection', 'notificationsSection', 'timetableAdminSection', 'timetableStudentSection', 'examsAdminSection', 'examsViewSection', 'doubtsSection'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.classList.add('hidden');
             });
@@ -600,6 +624,53 @@
                 const result = await response.json(); return result.success ? result.url : "";
             } catch (e) { return ""; }
         }
+
+        // --- Layout Setting Logic ---
+        async function loadInitialSettings() {
+            try {
+                const snap = await getDoc(doc(db, "settings", "layout"));
+                if(snap.exists() && snap.data().loginBgUrl) { applyLoginBackground(snap.data().loginBgUrl); }
+            } catch(e) { console.log("No layout set or error"); }
+        }
+        
+        function applyLoginBackground(url) {
+            const ls = document.getElementById('loginScreen');
+            ls.style.backgroundImage = `url('${url}')`;
+            ls.classList.remove('bg-gradient-to-b', 'from-gray-400', 'to-gray-600');
+            
+            const preview = document.getElementById('currentBgPreview');
+            if(preview) { preview.src = url; preview.classList.remove('hidden'); }
+        }
+        
+        loadInitialSettings(); // Fetch background on page load
+
+        document.getElementById('layoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('bg_photo');
+            if(fileInput.files.length === 0) return showAlert("Please select an image first.");
+            
+            const btn = document.getElementById('saveLayoutBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Uploading...';
+            btn.disabled = true;
+            
+            try {
+                const base64Image = await fileToBase64(fileInput.files[0]);
+                const photoUrl = await uploadToDrive(base64Image, fileInput.files[0].name);
+                
+                if(photoUrl) {
+                    await setDoc(doc(db, "settings", "layout"), { loginBgUrl: photoUrl });
+                    showAlert("Background updated successfully!");
+                    applyLoginBackground(photoUrl);
+                } else {
+                    showAlert("Failed to upload image to Drive.");
+                }
+            } catch(err) { showAlert("Error updating background."); }
+            
+            btn.innerHTML = '<i class="fas fa-save mr-1"></i> Update Background';
+            btn.disabled = false;
+        });
+
+        // ------------------------------
 
         window.toggleRoleFields = async (role, mode) => {
             const isTeacher = (role === 'teacher');
