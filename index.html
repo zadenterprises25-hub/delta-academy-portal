@@ -30,6 +30,18 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Hide Netlify Watermark */
+        a[href*="netlify.com"], 
+        iframe[title*="netlify"],
+        iframe[src*="netlify"],
+        div[id*="netlify"], 
+        div[class*="netlify"] {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
     </style>
 </head>
 <body class="bg-gray-50 h-screen font-sans text-gray-800 flex overflow-hidden">
