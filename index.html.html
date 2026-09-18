@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delta Academy B2B Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-sidebar { background: linear-gradient(180deg, #475569 0%, #334155 100%); }
+        .gradient-btn { background: linear-gradient(90deg, #64748b 0%, #475569 100%); color: white; }
+        .gradient-btn:hover { background: linear-gradient(90deg, #475569 0%, #334155 100%); }
+        .hidden { display: none !important; }
+        
+        @media print {
+            .no-print { display: none !important; }
+            #mainDashboard { display: block !important; height: auto !important; overflow: visible !important; }
+            body { background: white !important; }
+            .print-area { box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
+        }
+        
+        /* Custom Scrollbar for better UI */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-gray-50 h-screen font-sans text-gray-800 flex overflow-hidden">
+
+    <!-- Custom Alert Modal -->
+    <div id="customAlertModal" class="hidden fixed inset-0 bg-slate-900/60 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden text-center p-6 transform transition-all">
+            <i class="fas fa-info-circle text-4xl text-blue-500 mb-4"></i>
+            <h3 class="text-lg font-bold text-slate-800 mb-2" id="alertTitle">Notice</h3>
+            <p class="text-sm text-slate-600 mb-6" id="alertMsg">Message goes here.</p>
+            <button onclick="closeAlert()" class="w-full gradient-btn py-2 rounded-md font-bold shadow-sm">OK</button>
+        </div>
+    </div>
+
+    <!-- Custom Confirm Modal -->
+    <div id="customConfirmModal" class="hidden fixed inset-0 bg-slate-900/60 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden p-6 transform transition-all">
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3"><i class="fas fa-exclamation-triangle text-red-500"></i></div>
+                <h3 class="text-lg font-bold text-slate-800">Confirm Action</h3>
+            </div>
+            <p class="text-sm text-slate-600 mb-6" id="confirmMsg">Are you sure you want to proceed?</p>
+            <div class="flex justify-end space-x-3">
+                <button id="confirmNoBtn" class="px-4 py-2 rounded-md border border-slate-300 text-slate-600 font-bold text-sm hover:bg-slate-50 transition">Cancel</button>
+                <button id="confirmYesBtn" class="px-4 py-2 rounded-md bg-red-500 hover:bg-red-600 text-white font-bold text-sm shadow-sm transition">Yes, Proceed</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="absolute inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-gray-400 to-gray-600 no-print">
+        <div class="bg-gray-100 rounded-xl shadow-2xl w-[400px] overflow-hidden flex flex-col border border-gray-300/50">
+            <div class="bg-gradient-to-b from-[#8f92a1] to-[#717386] p-10 text-center">
+                <h1 class="text-4xl font-bold text-white mb-2 tracking-wide drop-shadow-md">DELTA</h1>
+                <p class="text-[10px] font-bold text-gray-200 tracking-[0.25em] uppercase">B2B Academy Portal</p>
+            </div>
+            
+            <div class="p-8 bg-gradient-to-b from-gray-100 to-gray-200 flex-1 relative">
+                <!-- Block Message Display -->
+                <div id="blockMessageContainer" class="hidden flex-col items-center justify-center text-center py-6">
+                    <i class="fas fa-ban text-red-500 text-6xl mb-4 drop-shadow-md"></i>
+                    <h2 class="text-xl font-black text-red-600 uppercase mb-2">Access Denied!</h2>
+                    <p class="text-sm text-slate-700 font-bold mb-4">Your account has been blocked.</p>
+                    <div class="bg-red-100 border-l-4 border-red-500 p-4 w-full rounded shadow-inner">
+                        <p id="blockReasonText" class="text-red-800 font-bold text-lg leading-snug"></p>
+                    </div>
+                    <button onclick="resetLogin()" class="mt-6 text-sm text-slate-500 hover:text-slate-700 underline font-semibold">Return to Login</button>
+                </div>
+
+                <div id="loginFormContainer">
+                    <h2 class="text-lg font-bold text-gray-500 mb-6 text-center">Sign In to Your Account</h2>
+                    <form id="loginForm" class="space-y-5">
+                        <div><label class="block text-xs font-semibold text-gray-500 mb-1">Username</label><input type="text" id="username" class="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white" required></div>
+                        <div><label class="block text-xs font-semibold text-gray-500 mb-1">Password</label><input type="password" id="password" class="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white" required></div>
+                        <button type="submit" class="w-full gradient-btn py-3 rounded-md font-bold shadow-md hover:-translate-y-0.5 mt-2 transition">Login securely</button>
+                        <p id="loginError" class="text-red-500 text-sm text-center hidden font-medium bg-red-50 border border-red-200 p-2 rounded">Invalid Credentials!</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="mainDashboard" class="hidden w-full h-full flex overflow-hidden">
+        
+        <!-- Sidebar -->
+        <div class="w-64 gradient-sidebar text-white flex flex-col shadow-2xl z-10 border-r border-slate-700 shrink-0 no-print">
+            <div class="p-6 text-center border-b border-slate-600/50">
+                <h2 class="text-3xl font-extrabold tracking-tight drop-shadow-md">DELTA</h2>
+                <p class="text-[10px] font-medium text-slate-300 mt-1 uppercase tracking-widest">Academy Network</p>
+            </div>
+            <nav class="flex-1 p-4 space-y-1 overflow-y-auto mt-2">
+                <a href="#" onclick="showSection('welcomeSection')" class="flex items-center px-4 py-2.5 rounded-lg bg-white/10 text-white font-medium shadow-sm border border-white/5 text-sm"><i class="fas fa-home w-6 text-lg"></i> Dashboard</a>
+                <a href="#" onclick="showSection('notificationsSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-bell w-6 text-slate-300"></i> Notifications</a>
+                <a href="#" onclick="showSection('doubtsSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-comments w-6 text-slate-300"></i> Doubt Forum</a>
+
+                <!-- Admin Controls -->
+                <div id="adminMenu" class="hidden space-y-1 mt-6">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase px-4 mb-2 tracking-widest">Admin Controls</p>
+                    <a href="#" onclick="showSection('manageUsersSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-users w-6 text-slate-300"></i> Manage Users</a>
+                    <a href="#" onclick="showSection('passwordManagerSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-key w-6 text-slate-300"></i> Passwords</a>
+                    <a href="#" onclick="showSection('timetableAdminSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-clock w-6 text-slate-300"></i> Study Timetable</a>
+                    <a href="#" onclick="showSection('assignClassesSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-chalkboard-teacher w-6 text-slate-300"></i> Assign Classes</a>
+                    <a href="#" onclick="showSection('examsAdminSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-file-alt w-6 text-slate-300"></i> Manage Exams</a>
+                    <a href="#" onclick="showSection('activityAdminSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-chart-line w-6 text-slate-300"></i> Teachers Activity</a>
+                </div>
+
+                <!-- Teacher Controls -->
+                <div id="teacherMenu" class="hidden space-y-1 mt-6">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase px-4 mb-2 tracking-widest">Teacher Menu</p>
+                    <a href="#" onclick="showSection('assignedClassesViewSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-calendar-check w-6 text-slate-300"></i> Assigned Classes</a>
+                    <a href="#" onclick="showSection('activityTeacherSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-tasks w-6 text-slate-300"></i> Activity Report</a>
+                </div>
+
+                <!-- Institution Controls -->
+                <div id="institutionMenu" class="hidden space-y-1 mt-6">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase px-4 mb-2 tracking-widest">Institution Menu</p>
+                    <a href="#" onclick="showSection('assignedClassesViewSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-calendar-check w-6 text-slate-300"></i> Assigned Classes</a>
+                    <a href="#" onclick="showSection('examsViewSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-award w-6 text-slate-300"></i> Exams & Marks</a>
+                </div>
+
+                <!-- Student Controls -->
+                <div id="studentMenu" class="hidden space-y-1 mt-6">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase px-4 mb-2 tracking-widest">Student Menu</p>
+                    <a href="#" onclick="showSection('timetableStudentSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-book-reader w-6 text-slate-300"></i> Study Timetable</a>
+                    <a href="#" onclick="showSection('assignedClassesViewSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-video w-6 text-slate-300"></i> My Classes</a>
+                    <a href="#" onclick="showSection('examsViewSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-award w-6 text-slate-300"></i> Exams & Marks</a>
+                </div>
+            </nav>
+            <div class="p-4 border-t border-slate-600/50">
+                <button id="logoutBtn" class="flex items-center w-full px-4 py-3 hover:bg-red-500/80 bg-white/5 rounded-lg transition font-medium text-sm"><i class="fas fa-sign-out-alt w-6"></i> Logout</button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="flex-1 flex flex-col bg-slate-50 overflow-y-auto relative w-full h-full">
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center border-b border-gray-200 sticky top-0 z-20 no-print shrink-0">
+                <h2 id="pageTitle" class="text-xl font-bold text-slate-700">Overview</h2>
+                <div class="flex items-center space-x-6">
+                    <button onclick="showSection('notificationsSection')" class="relative text-slate-400 hover:text-slate-600 transition">
+                        <i class="fas fa-bell text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-3 py-1 px-3">
+                        <div class="text-right">
+                            <p id="currentUserDisplay" class="text-sm font-bold text-slate-700">User</p>
+                            <p id="currentUserRole" class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Role</p>
+                        </div>
+                        <img id="headerUserImage" src="" class="hidden h-10 w-10 rounded-full object-cover shadow border-2 border-slate-200">
+                        <div id="headerUserIcon" class="h-9 w-9 rounded-md gradient-btn flex items-center justify-center font-bold shadow-sm">
+                            <i class="fas fa-user text-sm"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="p-6 md:p-8 print-area relative flex-1">
+                
+                <div id="welcomeSection" class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden no-print">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-slate-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 -mr-20 -mt-20"></div>
+                    <h3 class="text-2xl font-bold mb-2 text-slate-700 relative z-10">Welcome to Delta Academy</h3>
+                    <p class="text-slate-500 relative z-10">Select an option from the sidebar to manage your activities.</p>
+                </div>
+
+                <!-- Notifications Section -->
+                <div id="notificationsSection" class="hidden no-print space-y-6">
+                    <div id="createNotificationDiv" class="hidden bg-white p-6 rounded-xl shadow-sm border-t-4 border-yellow-500">
+                        <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-bullhorn text-yellow-500 mr-2"></i> Send Notification</h3>
+                        <form id="notificationForm" class="space-y-4">
+                            <div><input type="text" id="n_title" placeholder="Notification Title (e.g. Holiday Alert)" required class="w-full border border-slate-300 p-2 rounded outline-none focus:ring-2 focus:ring-yellow-400 text-sm"></div>
+                            <div><textarea id="n_message" rows="3" placeholder="Type your message here..." required class="w-full border border-slate-300 p-2 rounded outline-none focus:ring-2 focus:ring-yellow-400 text-sm"></textarea></div>
+                            <div class="flex justify-end"><button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded font-bold shadow-sm text-sm"><i class="fas fa-paper-plane mr-2"></i> Publish</button></div>
+                        </form>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-bold mb-4 text-slate-700">Notice Board</h3>
+                        <div id="notificationsList" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2"></div>
+                    </div>
+                </div>
+
+                <!-- Admin: Manage Users -->
+                <div id="manageUsersSection" class="hidden space-y-6 no-print">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-slate-500 relative">
+                        <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-user-plus mr-2 text-slate-500"></i> Add Single User</h3>
+                        <form id="singleUserForm" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-start">
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Full Name</label><input type="text" id="s_name" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-slate-400 outline-none text-sm"></div>
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Username</label><input type="text" id="s_username" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-slate-400 outline-none text-sm"></div>
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Password</label><input type="text" id="s_password" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-slate-400 outline-none text-sm"></div>
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Phone Number</label><input type="tel" id="s_phone" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-slate-400 outline-none text-sm"></div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Role</label>
+                                    <select id="s_role" onchange="toggleRoleFields(this.value, 'add')" class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-slate-400 outline-none text-sm">
+                                        <option value="student">Student</option>
+                                        <option value="institution">Institution</option>
+                                        <option value="teacher">Teacher</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div id="addTeacherFieldsContainer" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded border border-slate-200 mt-2">
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Teacher Photo</label><input type="file" id="s_photo" accept="image/*" class="text-sm text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-slate-200 hover:file:bg-slate-300 cursor-pointer"></div>
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Subject</label><input type="text" id="s_subject" placeholder="e.g. Mathematics" class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-slate-400 outline-none text-sm"></div>
+                            </div>
+                            <div id="addInstitutionFieldsContainer" class="hidden grid grid-cols-1 gap-4 bg-slate-50 p-4 rounded border border-slate-200 mt-2">
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Google Maps Link</label><input type="url" id="s_location" placeholder="https://maps.app.goo.gl/..." class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-slate-400 outline-none text-sm"></div>
+                            </div>
+                            <div id="addStudentFieldsContainer" class="grid grid-cols-1 gap-4 bg-slate-50 p-4 rounded border border-slate-200 mt-2">
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Associated Institution</label><select id="s_student_inst" class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-slate-400 outline-none text-sm"></select></div>
+                            </div>
+
+                            <div class="flex justify-end border-t pt-4">
+                                <button type="submit" id="addSingleUserBtn" class="gradient-btn px-6 py-2 rounded-md font-bold shadow-sm text-sm"><i class="fas fa-save mr-1"></i> Add User</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-slate-400">
+                        <h3 class="text-lg font-bold mb-4 text-slate-700 flex items-center"><i class="fas fa-file-csv mr-2 text-slate-500"></i> Bulk Import Users (CSV)</h3>
+                        <div class="flex flex-wrap items-center gap-4 bg-slate-50 p-4 rounded-md border border-slate-200">
+                            <button onclick="downloadCSVTemplate()" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 shadow-sm font-medium transition text-sm"><i class="fas fa-download mr-2 text-slate-500"></i> Download Template</button>
+                            <div class="flex-1 min-w-[200px]">
+                                <input type="file" id="csvFileInput" accept=".csv" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300 cursor-pointer">
+                            </div>
+                            <button id="uploadCsvBtn" class="px-6 py-2 gradient-btn rounded-md shadow-sm font-bold transition text-sm"><i class="fas fa-upload mr-2"></i> Upload</button>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-3"><i class="fas fa-info-circle text-slate-400"></i> Column Format required: <b>username, password, role, name, phone, extra_info</b> <br> <span class="pl-4 text-[10px]">(extra_info = 'Subject' for teachers, 'Institution Username' for students)</span></p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-slate-700">Registered Directory</h3>
+                            <button id="bulkDeleteBtn" onclick="deleteSelectedUsers()" class="hidden bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-bold shadow-sm transition items-center">
+                                <i class="fas fa-trash-alt mr-2"></i> Delete Selected
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]">
+                                    <tr>
+                                        <th class="p-3 w-10 text-center"><input type="checkbox" id="selectAllCb" onchange="toggleSelectAll(this)"></th>
+                                        <th class="p-3">User</th>
+                                        <th class="p-3">Role / Details</th>
+                                        <th class="p-3">Status</th>
+                                        <th class="p-3 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EDIT USER MODAL -->
+                <div id="editUserModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+                        <div class="p-4 border-b bg-slate-50 flex justify-between items-center shrink-0">
+                            <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-user-edit mr-2"></i> Edit User Details</h3>
+                            <button onclick="closeEditModal()" class="text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+                        </div>
+                        <div class="p-6 overflow-y-auto">
+                            <form id="editUserForm" class="space-y-4">
+                                <input type="hidden" id="e_id">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Full Name</label><input type="text" id="e_name" required class="w-full border p-2 rounded text-sm"></div>
+                                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Phone Number</label><input type="tel" id="e_phone" required class="w-full border p-2 rounded text-sm"></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Username</label><input type="text" id="e_username" required class="w-full border p-2 rounded text-sm"></div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1">Role</label>
+                                        <select id="e_role" onchange="toggleRoleFields(this.value, 'edit')" class="w-full border p-2 rounded text-sm">
+                                            <option value="student">Student</option><option value="institution">Institution</option><option value="teacher">Teacher</option><option value="admin">Admin</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div id="editTeacherFieldsContainer" class="hidden bg-slate-50 p-4 rounded border space-y-3">
+                                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Subject</label><input type="text" id="e_subject" class="w-full border p-2 rounded text-sm outline-none"></div>
+                                    <div><label class="block text-xs font-semibold text-slate-600 mb-2">Update Photo</label>
+                                        <div class="flex items-center space-x-4"><img id="e_currentPhoto" src="" class="hidden h-12 w-12 rounded object-cover shadow border"><input type="file" id="e_photo" accept="image/*" class="text-xs file:bg-white file:border file:rounded cursor-pointer"></div>
+                                    </div>
+                                </div>
+                                <div id="editInstitutionFieldsContainer" class="hidden bg-slate-50 p-4 rounded border space-y-3">
+                                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Google Maps Link</label><input type="url" id="e_location" class="w-full border p-2 rounded text-sm outline-none"></div>
+                                </div>
+                                <div id="editStudentFieldsContainer" class="hidden bg-slate-50 p-4 rounded border space-y-3">
+                                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Associated Inst. Username</label><input type="text" id="e_student_inst" placeholder="username of institution" class="w-full border p-2 rounded text-sm outline-none"></div>
+                                </div>
+
+                                <div class="border-t pt-4">
+                                    <label class="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">Account Access</label>
+                                    <select id="e_status" onchange="toggleBlockReason()" class="w-full border p-2 rounded text-sm font-bold bg-slate-50">
+                                        <option value="active" class="text-green-600">Active (Allowed)</option>
+                                        <option value="blocked" class="text-red-600">Blocked (Denied)</option>
+                                    </select>
+                                </div>
+                                <div id="e_blockReasonContainer" class="hidden">
+                                    <label class="block text-xs font-semibold text-red-600 mb-1">Reason for blocking</label>
+                                    <textarea id="e_blockReason" rows="2" class="w-full border border-red-300 p-2 rounded text-sm bg-red-50"></textarea>
+                                </div>
+                                <div class="flex justify-end pt-2">
+                                    <button type="submit" id="editUpdateBtn" class="gradient-btn px-6 py-2 rounded font-bold shadow text-sm">Update Details</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="passwordManagerSection" class="hidden no-print">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-key mr-2 text-slate-500"></i> Password Manager</h3>
+                        <div class="overflow-x-auto"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Name</th><th class="p-3">Username</th><th class="p-3">Role</th><th class="p-3">Current Password</th><th class="p-3">Action</th></tr></thead><tbody id="passwordTableBody" class="divide-y divide-slate-100"></tbody></table></div>
+                    </div>
+                </div>
+
+                <!-- Admin: Timetable Setup -->
+                <div id="timetableAdminSection" class="hidden no-print space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-blue-500">
+                        <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-calendar-plus mr-2 text-blue-500"></i> Publish Daily Timetable</h3>
+                        <form id="timetableForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                            <div><label class="block text-xs font-semibold text-slate-600 mb-1">Date</label><input type="date" id="tt_date" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-400 outline-none text-sm"></div>
+                            <div><label class="block text-xs font-semibold text-slate-600 mb-1">Subject</label><input type="text" id="tt_subject" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-400 outline-none text-sm"></div>
+                            <div><label class="block text-xs font-semibold text-slate-600 mb-1">Portions / Topics</label><input type="text" id="tt_topic" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-400 outline-none text-sm"></div>
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold shadow-sm text-sm"><i class="fas fa-plus mr-1"></i> Publish</button>
+                        </form>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-md font-bold mb-4 text-slate-700">Recent Timetables</h3>
+                        <div class="overflow-x-auto"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Date</th><th class="p-3">Subject</th><th class="p-3">Topics</th><th class="p-3">Action</th></tr></thead><tbody id="ttAdminTableBody" class="divide-y divide-slate-100"></tbody></table></div>
+                    </div>
+                </div>
+
+                <!-- Student: View Timetable -->
+                <div id="timetableStudentSection" class="hidden no-print space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center mb-6">
+                        <h2 class="text-2xl font-black text-slate-700"><i class="fas fa-book-reader text-blue-500 mr-2"></i> Study Plan</h2>
+                        <p class="text-xs text-slate-500 mt-1">Focus on today's goals and review yesterday's portions.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5 shadow-sm">
+                            <h3 class="font-bold text-blue-800 uppercase tracking-wide border-b border-blue-200 pb-2 mb-3"><i class="fas fa-calendar-day mr-2"></i> Today's Schedule</h3>
+                            <div id="studentTtToday" class="space-y-3"></div>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm opacity-90">
+                            <h3 class="font-bold text-slate-600 uppercase tracking-wide border-b border-slate-300 pb-2 mb-3"><i class="fas fa-history mr-2"></i> Yesterday's Review</h3>
+                            <div id="studentTtYesterday" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin: Assign Classes -->
+                <div id="assignClassesSection" class="hidden no-print space-y-6">
+                    <div class="bg-white p-8 rounded-xl shadow-sm border-t-4 border-slate-500">
+                        <h3 class="text-xl font-bold mb-6 text-slate-700"><i class="fas fa-chalkboard-teacher mr-2 text-slate-500"></i> Assign New Class</h3>
+                        <form id="assignClassForm" class="space-y-5">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div><label class="text-xs font-semibold text-slate-600">Institution</label><select id="assignInstitution" required class="w-full border p-2 rounded bg-slate-50 text-sm"></select></div>
+                                <div><label class="text-xs font-semibold text-slate-600">Teacher</label><select id="assignTeacher" required class="w-full border p-2 rounded bg-slate-50 text-sm"></select></div>
+                                <div><label class="text-xs font-semibold text-slate-600">Date</label><input type="date" id="assignDate" required class="w-full border p-2 rounded text-sm"></div>
+                                <div><label class="text-xs font-semibold text-slate-600">Time</label><input type="time" id="assignTime" required class="w-full border p-2 rounded text-sm"></div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                <div><label class="text-xs font-semibold text-slate-600">Subject</label><input type="text" id="assignSubject" required class="w-full border p-2 rounded text-sm"></div>
+                                <div><label class="text-xs font-semibold text-slate-600">Portions</label><input type="text" id="assignPortion" required class="w-full border p-2 rounded text-sm"></div>
+                                <div><label class="text-xs font-semibold text-slate-600">Mode</label><select id="assignMode" class="w-full border p-2 rounded bg-slate-50 text-sm"><option value="Offline">Offline</option><option value="Online">Online</option></select></div>
+                                <div id="meetLinkDiv" class="hidden"><label class="text-xs font-semibold text-slate-600">Link</label><input type="text" id="meetLink" class="w-full border p-2 rounded text-sm"></div>
+                                <div><button type="submit" class="w-full gradient-btn font-bold p-2 rounded shadow text-sm"><i class="fas fa-paper-plane mr-1"></i> Assign</button></div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-bold mb-4 text-slate-700">Assigned Classes</h3>
+                        <div class="overflow-x-auto"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Date/Time</th><th class="p-3">Institution</th><th class="p-3">Teacher</th><th class="p-3">Sub/Portion</th><th class="p-3">Mode</th><th class="p-3">Action</th></tr></thead><tbody id="adminClassesTableBody"></tbody></table></div>
+                    </div>
+                </div>
+
+                <!-- Shared: View Assigned Classes -->
+                <div id="assignedClassesViewSection" class="hidden no-print space-y-6">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border flex justify-between items-center"><h3 class="font-bold text-slate-700"><i class="fas fa-calendar-alt mr-2"></i> My Assigned Classes</h3><div><input type="date" id="searchClassDate" onchange="loadUserAssignedClasses()" class="border p-1 rounded text-sm outline-none"></div></div>
+                    <div class="bg-indigo-50 p-6 rounded-xl shadow-sm border border-indigo-100"><h4 class="font-bold text-indigo-800 mb-4 text-sm uppercase">Today's Classes</h4><div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="todayClassesContainer"></div></div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border"><h4 class="font-bold text-slate-700 mb-4 text-sm uppercase" id="otherClassesTitle">Upcoming</h4><div class="overflow-x-auto"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 font-bold text-[10px] uppercase"><tr><th class="p-3">Date/Time</th><th id="userViewTargetHeader" class="p-3">Target</th><th class="p-3">Subject</th><th class="p-3">Portion</th><th class="p-3">Mode / Action</th></tr></thead><tbody id="userClassesTableBody"></tbody></table></div></div>
+                </div>
+
+                <!-- Admin: Manage Exams -->
+                <div id="examsAdminSection" class="hidden no-print space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-indigo-500">
+                        <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-file-signature mr-2 text-indigo-500"></i> Assign Exam</h3>
+                        <form id="assignExamForm" class="space-y-4">
+                            <input type="hidden" id="ex_id">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div class="col-span-2"><label class="block text-xs font-semibold text-slate-600 mb-1">Exam Title</label><input type="text" id="ex_title" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></div>
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Date</label><input type="date" id="ex_date" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></div>
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Institution</label><select id="ex_inst" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></select></div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Mode</label><select id="ex_mode" class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"><option value="Offline">Offline</option><option value="Online">Online</option></select></div>
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Max Marks</label><input type="number" id="ex_max" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></div>
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Pass Marks</label><input type="number" id="ex_pass" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></div>
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Exam Link (if online)</label><input type="text" id="ex_link" class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></div>
+                                <button type="submit" id="ex_submitBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded font-bold shadow-sm text-sm"><i class="fas fa-save mr-1"></i> Save Exam</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-md font-bold mb-4 text-slate-700">Exam Roster</h3>
+                        <div class="overflow-x-auto"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Exam Details</th><th class="p-3">Target</th><th class="p-3">Marks Info</th><th class="p-3">Status</th><th class="p-3 text-right">Actions</th></tr></thead><tbody id="examsAdminTableBody" class="divide-y divide-slate-100"></tbody></table></div>
+                    </div>
+                </div>
+
+                <!-- Mark Entry Modal -->
+                <div id="markEntryModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                        <div class="p-4 border-b bg-indigo-50 flex justify-between items-center shrink-0">
+                            <h3 class="font-bold text-indigo-800 text-lg" id="markEntryTitle"><i class="fas fa-edit mr-2"></i> Enter Marks</h3>
+                            <button onclick="closeMarkModal()" class="text-indigo-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+                        </div>
+                        <div class="p-6 overflow-y-auto bg-slate-50">
+                            <input type="hidden" id="me_examId">
+                            <input type="hidden" id="me_max">
+                            <div class="overflow-x-auto border border-slate-200 rounded-lg bg-white">
+                                <table class="min-w-full text-left text-sm">
+                                    <thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Student Name</th><th class="p-3">Username</th><th class="p-3 w-32">Marks Obtained</th></tr></thead>
+                                    <tbody id="markEntryTableBody" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                            <div class="flex justify-end mt-4"><button onclick="saveMarks()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-bold shadow text-sm">Save All Marks</button></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shared: View Exams & Marks -->
+                <div id="examsViewSection" class="hidden space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="no-print flex justify-between items-end mb-4 border-b pb-2">
+                            <h3 class="text-xl font-bold text-slate-700"><i class="fas fa-award mr-2 text-indigo-500"></i> Exams & Report Card</h3>
+                            <button onclick="window.print()" class="gradient-btn px-4 py-1.5 rounded shadow text-sm font-bold"><i class="fas fa-print mr-1"></i> Print</button>
+                        </div>
+                        <div class="print-area">
+                            <div class="hidden print-header text-center mb-4"><h2 class="text-2xl font-bold">DELTA ACADEMY - Report Card</h2><p id="printReportUser" class="text-sm font-bold mt-1"></p></div>
+                            <div class="overflow-x-auto"><table class="min-w-full text-left text-sm border-collapse border border-slate-300"><thead class="bg-slate-100 text-slate-700 uppercase font-bold text-[10px]"><tr><th class="border border-slate-300 p-3">Date</th><th class="border border-slate-300 p-3">Exam Title</th><th class="border border-slate-300 p-3" id="examViewUserCol">Student</th><th class="border border-slate-300 p-3 text-center">Max Marks</th><th class="border border-slate-300 p-3 text-center">Marks Obtained</th><th class="border border-slate-300 p-3 text-center">Status</th></tr></thead><tbody id="examsViewTableBody"></tbody></table></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Doubt Forum -->
+                <div id="doubtsSection" class="hidden no-print space-y-6 flex flex-col h-full">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center shrink-0">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-700"><i class="fas fa-comments mr-2 text-purple-500"></i> Doubt Clearance Forum</h3>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wide">Ask questions, get answers.</p>
+                        </div>
+                        <button onclick="document.getElementById('askDoubtModal').classList.remove('hidden')" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-bold shadow-sm text-sm transition"><i class="fas fa-plus mr-1"></i> Ask Doubt</button>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto bg-slate-100 rounded-xl p-4 border border-slate-200 shadow-inner" id="doubtsListContainer">
+                        <!-- Doubts rendered here -->
+                    </div>
+                </div>
+
+                <!-- Ask Doubt Modal -->
+                <div id="askDoubtModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+                        <div class="p-4 border-b bg-purple-50 flex justify-between items-center">
+                            <h3 class="font-bold text-purple-800 text-lg"><i class="fas fa-question-circle mr-2"></i> Submit a Doubt</h3>
+                            <button onclick="document.getElementById('askDoubtModal').classList.add('hidden')" class="text-purple-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+                        </div>
+                        <form id="askDoubtForm" class="p-6 space-y-4">
+                            <div><label class="block text-xs font-semibold text-slate-600 mb-1">Subject</label><input type="text" id="d_subject" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-purple-400 outline-none text-sm"></div>
+                            <div><label class="block text-xs font-semibold text-slate-600 mb-1">Chapter / Topic</label><input type="text" id="d_chapter" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-purple-400 outline-none text-sm"></div>
+                            <div><label class="block text-xs font-semibold text-slate-600 mb-1">Your Question</label><textarea id="d_question" rows="4" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-purple-400 outline-none text-sm"></textarea></div>
+                            <div class="flex justify-end pt-2"><button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded font-bold shadow text-sm">Submit Doubt</button></div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- View/Reply Doubt Modal -->
+                <div id="viewDoubtModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                        <div class="p-4 border-b bg-slate-50 flex justify-between items-center shrink-0">
+                            <h3 class="font-bold text-slate-800 text-lg">Discussion Thread</h3>
+                            <button onclick="document.getElementById('viewDoubtModal').classList.add('hidden')" class="text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+                        </div>
+                        <div class="p-6 overflow-y-auto bg-slate-50 flex-1" id="doubtThreadContent">
+                            <!-- Thread loaded here -->
+                        </div>
+                        <div class="p-4 border-t bg-white shrink-0">
+                            <form id="replyDoubtForm" class="flex space-x-2">
+                                <input type="hidden" id="r_doubtId">
+                                <input type="text" id="r_text" placeholder="Type your reply or paste a link..." required class="flex-1 border border-slate-300 p-2 rounded outline-none focus:ring-2 focus:ring-purple-400 text-sm">
+                                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded font-bold shadow text-sm"><i class="fas fa-paper-plane"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin & Teacher Activity Reports (Unchanged layout) -->
+                <div id="activityAdminSection" class="hidden">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border"><div class="no-print flex justify-between mb-4"><h3 class="font-bold text-slate-700">Teachers Activity</h3><button onclick="window.print()" class="gradient-btn px-4 py-1 rounded text-sm">Print</button></div><div class="no-print grid grid-cols-3 gap-4 mb-4 bg-slate-50 p-4 rounded"><div><label class="text-xs font-bold">Teachers</label><div id="activityTeacherList" class="h-24 overflow-y-auto border bg-white p-2 text-sm space-y-1"></div></div><div><label class="text-xs font-bold">From</label><input type="date" id="filterStartDate" class="w-full border p-2 rounded text-sm"></div><div><label class="text-xs font-bold">To</label><input type="date" id="filterEndDate" class="w-full border p-2 rounded text-sm"></div><div class="col-span-3 flex justify-end"><button onclick="loadAdminActivityReport()" class="bg-slate-700 text-white px-4 py-2 rounded text-sm font-bold">Generate</button></div></div><div class="print-area"><div class="hidden print-header text-center mb-4"><h2 class="text-2xl font-bold">DELTA ACADEMY</h2><p>Activity Report</p></div><table class="min-w-full text-left text-sm border-collapse border"><thead class="bg-slate-100 font-bold text-xs uppercase"><tr><th class="border p-2">Date</th><th class="border p-2">Teacher</th><th class="border p-2">Institution</th><th class="border p-2">Subject</th><th class="border p-2">Mode</th></tr></thead><tbody id="adminActivityTableBody"></tbody></table></div></div>
+                </div>
+
+                <div id="activityTeacherSection" class="hidden">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border"><div class="no-print flex justify-between mb-4"><h3 class="font-bold text-slate-700">My Activity</h3><button onclick="window.print()" class="gradient-btn px-4 py-1 rounded text-sm">Print</button></div><div class="print-area"><div class="hidden print-header text-center mb-4"><h2 class="text-2xl font-bold">DELTA ACADEMY</h2><p id="printTeacherName">Name</p></div><table class="min-w-full text-left text-sm border-collapse border"><thead class="bg-slate-100 font-bold text-xs uppercase"><tr><th class="border p-2">Date & Time</th><th class="border p-2">Institution</th><th class="border p-2">Subject</th><th class="border p-2">Portion</th><th class="border p-2">Mode</th></tr></thead><tbody id="teacherActivityTableBody"></tbody></table></div></div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDKixgUCldwZUv51wqiTQjlXFl1U_Q1b5M",
+            authDomain: "delta-academi.firebaseapp.com",
+            projectId: "delta-academi",
+            storageBucket: "delta-academi.firebasestorage.app",
+            messagingSenderId: "840014439514",
+            appId: "1:840014439514:web:591d2b099b9036b4c6e463"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let currentUser = null;
+
+        // Custom Modals Logic
+        window.showAlert = (msg, title="Notice") => {
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMsg').innerText = msg;
+            document.getElementById('customAlertModal').classList.remove('hidden');
+        };
+        window.closeAlert = () => document.getElementById('customAlertModal').classList.add('hidden');
+
+        window.showConfirm = (msg) => {
+            return new Promise((resolve) => {
+                document.getElementById('confirmMsg').innerText = msg;
+                const modal = document.getElementById('customConfirmModal');
+                modal.classList.remove('hidden');
+                
+                document.getElementById('confirmYesBtn').onclick = () => { modal.classList.add('hidden'); resolve(true); };
+                document.getElementById('confirmNoBtn').onclick = () => { modal.classList.add('hidden'); resolve(false); };
+            });
+        };
+
+        // Routing
+        window.showSection = (sectionId) => {
+            ['welcomeSection', 'manageUsersSection', 'passwordManagerSection', 'assignClassesSection', 'assignedClassesViewSection', 'activityAdminSection', 'activityTeacherSection', 'notificationsSection', 'timetableAdminSection', 'timetableStudentSection', 'examsAdminSection', 'examsViewSection', 'doubtsSection'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            if(sectionId === 'manageUsersSection') loadUsersList();
+            if(sectionId === 'passwordManagerSection') loadPasswordManager();
+            if(sectionId === 'assignClassesSection') { loadAssignDropdowns(); loadAdminAssignedClasses(); }
+            if(sectionId === 'assignedClassesViewSection') loadUserAssignedClasses();
+            if(sectionId === 'activityAdminSection') loadTeacherCheckboxes();
+            if(sectionId === 'activityTeacherSection') loadMyActivityReport();
+            if(sectionId === 'notificationsSection') loadNotifications();
+            if(sectionId === 'timetableAdminSection') loadAdminTimetables();
+            if(sectionId === 'timetableStudentSection') loadStudentTimetables();
+            if(sectionId === 'examsAdminSection') { loadInstDropdownForExams(); loadAdminExams(); }
+            if(sectionId === 'examsViewSection') loadExamsView();
+            if(sectionId === 'doubtsSection') loadDoubts();
+        };
+
+        const fileToBase64 = (file) => new Promise((resolve, reject) => {
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
+        });
+
+        async function uploadToDrive(base64Data, fileName) {
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbyM4X1lat27uDqO90zktqKTC06wKuusLLj4EyczbGrRpv6gqDHQjmMyaq2vHrsWhHTtmw/exec";
+            try {
+                const response = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ base64: base64Data, name: fileName }) });
+                const result = await response.json(); return result.success ? result.url : "";
+            } catch (e) { return ""; }
+        }
+
+        window.toggleRoleFields = async (role, mode) => {
+            const isTeacher = (role === 'teacher');
+            const isInst = (role === 'institution');
+            const isStudent = (role === 'student');
+
+            const prefix = mode === 'add' ? 's_' : 'e_';
+            
+            document.getElementById(mode === 'add' ? 'addTeacherFieldsContainer' : 'editTeacherFieldsContainer').classList.toggle('hidden', !isTeacher);
+            document.getElementById(mode === 'add' ? 'addInstitutionFieldsContainer' : 'editInstitutionFieldsContainer').classList.toggle('hidden', !isInst);
+            document.getElementById(mode === 'add' ? 'addStudentFieldsContainer' : 'editStudentFieldsContainer').classList.toggle('hidden', !isStudent);
+
+            if(isStudent) {
+                // Populate Institution Dropdown for Student
+                const instSelect = document.getElementById(prefix + 'student_inst');
+                if(instSelect.options.length <= 1) { // Load if empty
+                    instSelect.innerHTML = '<option value="">-- Select Institution --</option>';
+                    const snaps = await getDocs(query(collection(db, "users"), where("role", "==", "institution")));
+                    snaps.forEach(d => { instSelect.innerHTML += `<option value="${d.data().username}">${d.data().name}</option>`; });
+                }
+            }
+        };
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const un = document.getElementById('username').value;
+            const pw = document.getElementById('password').value;
+            
+            if(un === 'admin' && pw === 'admin123') {
+                proceedToDashboard({ id: 'admin1', username: 'admin', role: 'admin', name: 'Super Admin', status: 'active' }); return;
+            }
+            try {
+                const q = query(collection(db, "users"), where("username", "==", un), where("password", "==", pw));
+                const snaps = await getDocs(q);
+                if (!snaps.empty) {
+                    snaps.forEach((docSnap) => {
+                        let data = docSnap.data(); data.id = docSnap.id;
+                        if(data.status === 'blocked') {
+                            document.getElementById('loginFormContainer').classList.add('hidden');
+                            document.getElementById('blockMessageContainer').classList.remove('hidden');
+                            document.getElementById('blockMessageContainer').classList.add('flex');
+                            document.getElementById('blockReasonText').innerText = data.blockReason || "Contact Administrator.";
+                        } else proceedToDashboard(data);
+                    });
+                } else document.getElementById('loginError').classList.remove('hidden');
+            } catch (error) { showAlert("Error connecting to DB"); }
+        });
+
+        window.resetLogin = () => {
+            document.getElementById('loginFormContainer').classList.remove('hidden');
+            document.getElementById('blockMessageContainer').classList.add('hidden');
+            document.getElementById('blockMessageContainer').classList.remove('flex');
+            document.getElementById('loginForm').reset();
+        };
+
+        function proceedToDashboard(user) {
+            currentUser = user;
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainDashboard').classList.remove('hidden');
+            document.getElementById('currentUserDisplay').innerText = user.name || user.username;
+            document.getElementById('currentUserRole').innerText = user.role;
+
+            const icon = document.getElementById('headerUserIcon'); const img = document.getElementById('headerUserImage');
+            if(user.photoUrl && user.role === 'teacher') { icon.classList.add('hidden'); img.classList.remove('hidden'); img.src = user.photoUrl; } 
+            else { icon.classList.remove('hidden'); img.classList.add('hidden'); img.src = ""; }
+
+            ['adminMenu', 'teacherMenu', 'institutionMenu', 'studentMenu'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById('createNotificationDiv').classList.add('hidden');
+
+            if(user.role === 'admin') {
+                document.getElementById('adminMenu').classList.remove('hidden'); 
+                document.getElementById('createNotificationDiv').classList.remove('hidden');
+                showSection('welcomeSection');
+            } else if (user.role === 'teacher') {
+                document.getElementById('teacherMenu').classList.remove('hidden'); document.getElementById('printTeacherName').innerText = user.name; document.getElementById('userViewTargetHeader').innerText = "Institution"; showSection('assignedClassesViewSection');
+            } else if (user.role === 'institution') {
+                document.getElementById('institutionMenu').classList.remove('hidden'); document.getElementById('userViewTargetHeader').innerText = "Subject Teacher"; showSection('assignedClassesViewSection');
+            } else if (user.role === 'student') {
+                document.getElementById('studentMenu').classList.remove('hidden'); document.getElementById('userViewTargetHeader').innerText = "Subject Teacher"; showSection('timetableStudentSection');
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => { currentUser = null; document.getElementById('mainDashboard').classList.add('hidden'); document.getElementById('loginScreen').classList.remove('hidden'); document.getElementById('loginForm').reset(); });
+
+        document.getElementById('notificationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "notifications"), { title: document.getElementById('n_title').value, message: document.getElementById('n_message').value, date: new Date().toISOString(), sender: currentUser.name || "Admin" });
+            showAlert("Notification Sent!"); document.getElementById('notificationForm').reset(); loadNotifications();
+        });
+
+        async function loadNotifications() {
+            const list = document.getElementById('notificationsList');
+            const snaps = await getDocs(collection(db, "notifications"));
+            let notifs = []; snaps.forEach(d => {let n = d.data(); n.id=d.id; notifs.push(n);});
+            notifs.sort((a,b) => new Date(b.date) - new Date(a.date));
+            list.innerHTML = '';
+            if(notifs.length === 0) { list.innerHTML = '<p class="text-sm text-slate-500">No notifications at the moment.</p>'; return;}
+            notifs.forEach(n => {
+                let dateStr = new Date(n.date).toLocaleString('en-US', {dateStyle:'medium', timeStyle:'short'});
+                let delBtn = currentUser.role === 'admin' ? `<button onclick="deleteNotification('${n.id}')" class="absolute top-4 right-4 text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>` : '';
+                list.innerHTML += `<div class="p-4 border border-slate-200 rounded-lg bg-slate-50 relative shadow-sm"><h4 class="font-bold text-slate-700 text-md">${n.title}</h4><p class="text-[10px] font-bold text-slate-400 uppercase mb-2"><i class="fas fa-clock mr-1"></i> ${dateStr} &nbsp;|&nbsp; <i class="fas fa-user-shield mr-1"></i> Admin</p><p class="text-sm text-slate-600 mt-2">${n.message}</p>${delBtn}</div>`;
+            });
+        }
+        window.deleteNotification = async (id) => { if(await showConfirm("Delete notification?")) { await deleteDoc(doc(db, "notifications", id)); loadNotifications(); } }
+
+        document.getElementById('singleUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('addSingleUserBtn');
+            const role = document.getElementById('s_role').value;
+            let photoUrl = "", subject = "", locationLink = "", instUsername = "";
+            
+            if (role === 'teacher') {
+                subject = document.getElementById('s_subject').value;
+                const fileInput = document.getElementById('s_photo');
+                if(fileInput.files.length > 0) { btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Uploading...'; btn.disabled = true; photoUrl = await uploadToDrive(await fileToBase64(fileInput.files[0]), fileInput.files[0].name); }
+            } else if (role === 'institution') locationLink = document.getElementById('s_location').value;
+            else if (role === 'student') instUsername = document.getElementById('s_student_inst').value;
+
+            await addDoc(collection(db, "users"), { name: document.getElementById('s_name').value, username: document.getElementById('s_username').value, password: document.getElementById('s_password').value, phone: document.getElementById('s_phone').value, role: role, subject: subject, photoUrl: photoUrl, locationLink: locationLink, instUsername: instUsername, status: 'active', blockReason: '' });
+            showAlert("User created!"); btn.innerHTML = '<i class="fas fa-save mr-1"></i> Add User'; btn.disabled = false; document.getElementById('singleUserForm').reset(); document.getElementById('addTeacherFieldsContainer').classList.add('hidden'); document.getElementById('addInstitutionFieldsContainer').classList.add('hidden'); document.getElementById('addStudentFieldsContainer').classList.add('hidden'); loadUsersList();
+        });
+
+        async function loadUsersList() {
+            const tbody = document.getElementById('usersTableBody'); const snaps = await getDocs(collection(db, "users")); tbody.innerHTML = '';
+            snaps.forEach(docSnap => {
+                const d = docSnap.data();
+                let photoHtml = (d.role === 'teacher' && d.photoUrl) ? `<img src="${d.photoUrl}" class="w-8 h-8 rounded-full object-cover shadow inline mr-2">` : `<div class="w-8 h-8 rounded-full bg-slate-200 inline-flex items-center justify-center mr-2 text-xs text-slate-500"><i class="fas fa-user"></i></div>`;
+                let statusBadge = d.status === 'blocked' ? `<span class="px-2 py-1 bg-red-100 text-red-700 rounded text-[10px] font-bold">BLOCKED</span>` : `<span class="px-2 py-1 bg-green-100 text-green-700 rounded text-[10px] font-bold">ACTIVE</span>`;
+                let roleDisplay = d.role === 'teacher' && d.subject ? `TEACHER <span class="text-[10px] text-blue-600">(${d.subject})</span>` : (d.role === 'student' && d.instUsername ? `STUDENT <span class="text-[10px] text-purple-600">(${d.instUsername})</span>` : d.role);
+                tbody.innerHTML += `<tr class="border-b hover:bg-slate-50"><td class="p-3 text-center"><input type="checkbox" value="${docSnap.id}" class="user-cb w-4 h-4 cursor-pointer" onchange="updateBulkBtn()"></td><td class="p-3 font-semibold text-slate-700 flex items-center">${photoHtml} <div>${d.name} <br><span class="text-[10px] text-slate-500 font-normal">@${d.username}</span></div></td><td class="p-3 text-sm uppercase text-slate-600 font-bold">${roleDisplay} <br><span class="text-xs text-slate-500 normal-case font-normal"><i class="fas fa-phone mr-1"></i>${d.phone || '-'}</span></td><td class="p-3">${statusBadge}</td><td class="p-3 text-right"><button onclick="openEditModal('${docSnap.id}')" class="text-blue-500 hover:text-blue-700 text-xs font-bold mr-3"><i class="fas fa-edit"></i> Edit</button><button onclick="deleteUser('${docSnap.id}')" class="text-red-500 hover:text-red-700 text-xs font-bold"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
+        }
+
+        window.openEditModal = async (id) => {
+            const docSnap = await getDoc(doc(db, "users", id));
+            if(docSnap.exists()) {
+                const d = docSnap.data();
+                document.getElementById('e_id').value = id; document.getElementById('e_name').value = d.name; document.getElementById('e_phone').value = d.phone || ''; document.getElementById('e_username').value = d.username; document.getElementById('e_role').value = d.role; document.getElementById('e_status').value = d.status || 'active'; document.getElementById('e_blockReason').value = d.blockReason || ''; document.getElementById('e_subject').value = d.subject || ''; document.getElementById('e_location').value = d.locationLink || '';
+                
+                await toggleRoleFields(d.role, 'edit');
+                if(d.role === 'student') document.getElementById('e_student_inst').value = d.instUsername || '';
+
+                if(d.role === 'teacher' && d.photoUrl) { document.getElementById('e_currentPhoto').src = d.photoUrl; document.getElementById('e_currentPhoto').classList.remove('hidden'); } else document.getElementById('e_currentPhoto').classList.add('hidden');
+                toggleBlockReason(); document.getElementById('editUserModal').classList.remove('hidden');
+            }
+        };
+
+        window.closeEditModal = () => document.getElementById('editUserModal').classList.add('hidden');
+        window.toggleBlockReason = () => document.getElementById('e_blockReasonContainer').classList.toggle('hidden', document.getElementById('e_status').value !== 'blocked');
+
+        document.getElementById('editUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('editUpdateBtn'); const id = document.getElementById('e_id').value; const role = document.getElementById('e_role').value;
+            let updateData = { name: document.getElementById('e_name').value, phone: document.getElementById('e_phone').value, username: document.getElementById('e_username').value, role: role, status: document.getElementById('e_status').value, blockReason: document.getElementById('e_blockReason').value };
+            if(role === 'teacher') {
+                updateData.subject = document.getElementById('e_subject').value; updateData.locationLink = ""; updateData.instUsername = "";
+                const fileInput = document.getElementById('e_photo');
+                if(fileInput.files.length > 0) { btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Uploading...'; btn.disabled = true; updateData.photoUrl = await uploadToDrive(await fileToBase64(fileInput.files[0]), fileInput.files[0].name); }
+            } else if (role === 'institution') { updateData.locationLink = document.getElementById('e_location').value; updateData.subject = ""; updateData.photoUrl = ""; updateData.instUsername = ""; }
+            else if (role === 'student') { updateData.instUsername = document.getElementById('e_student_inst').value; updateData.locationLink = ""; updateData.subject = ""; updateData.photoUrl = ""; }
+            else { updateData.subject = ""; updateData.photoUrl = ""; updateData.locationLink = ""; updateData.instUsername = ""; }
+
+            await updateDoc(doc(db, "users", id), updateData); showAlert("User updated!"); btn.innerHTML = 'Update Details'; btn.disabled = false; closeEditModal(); loadUsersList(); loadPasswordManager();
+        });
+
+        window.toggleSelectAll = (src) => { document.querySelectorAll('.user-cb').forEach(cb => cb.checked = src.checked); updateBulkBtn(); };
+        window.updateBulkBtn = () => document.getElementById('bulkDeleteBtn').classList.toggle('hidden', document.querySelectorAll('.user-cb:checked').length === 0);
+        window.deleteSelectedUsers = async () => { const sel = document.querySelectorAll('.user-cb:checked'); if(await showConfirm(`Delete ${sel.length} users?`)) { for (let cb of sel) await deleteDoc(doc(db, "users", cb.value)); loadUsersList(); } };
+        window.deleteUser = async (id) => { if(await showConfirm("Delete this user?")) { await deleteDoc(doc(db, "users", id)); loadUsersList(); } };
+        window.updatePassword = async (id) => { await updateDoc(doc(db, "users", id), { password: document.getElementById(`pw_${id}`).value }); showAlert("Password updated!"); };
+        
+        async function loadPasswordManager() {
+            const tbody = document.getElementById('passwordTableBody'); const snaps = await getDocs(collection(db, "users")); tbody.innerHTML = '';
+            snaps.forEach(docSnap => { const d = docSnap.data(); tbody.innerHTML += `<tr class="border-b hover:bg-slate-50"><td class="p-3">${d.name}</td><td class="p-3">${d.username}</td><td class="p-3 text-xs uppercase">${d.role}</td><td class="p-3"><input type="text" id="pw_${docSnap.id}" value="${d.password}" class="border p-1 rounded text-sm w-32"></td><td class="p-3"><button onclick="updatePassword('${docSnap.id}')" class="bg-blue-500 text-white px-3 py-1 rounded text-xs font-bold shadow-sm hover:bg-blue-600 transition">Save Reset</button></td></tr>`; });
+        }
+
+        window.downloadCSVTemplate = () => {
+            const csvContent = "data:text/csv;charset=utf-8,username,password,role,name,phone,extra_info\nteacher1,pass123,teacher,John Doe,9876543210,Mathematics\nschool1,pass123,institution,Crescent High,000000000,\nstudent1,pass123,student,Ravi,1234567890,school1";
+            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", "delta_users_template.csv");
+            document.body.appendChild(link); link.click(); link.remove();
+        };
+
+        document.getElementById('uploadCsvBtn').addEventListener('click', () => {
+            const fileInput = document.getElementById('csvFileInput');
+            if (!fileInput.files.length) return showAlert("Select a CSV file.");
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const rows = e.target.result.split('\n'); let count = 0;
+                for(let i = 1; i < rows.length; i++) {
+                    const row = rows[i].split(',');
+                    if (row.length >= 5) {
+                        try {
+                            let roleStr = row[2].trim().toLowerCase();
+                            let extraInfo = row[5] ? row[5].trim() : "";
+                            let data = { username: row[0].trim(), password: row[1].trim(), role: roleStr, name: row[3].trim(), phone: row[4].trim(), status: 'active', blockReason: '' };
+                            if(roleStr === 'teacher') data.subject = extraInfo;
+                            if(roleStr === 'student') data.instUsername = extraInfo;
+                            await addDoc(collection(db, "users"), data);
+                            count++;
+                        } catch (err) {}
+                    }
+                }
+                showAlert(`Imported ${count} users successfully!`); loadUsersList();
+            };
+            reader.readAsText(fileInput.files[0]);
+        });
+
+        document.getElementById('timetableForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "timetables"), { date: document.getElementById('tt_date').value, subject: document.getElementById('tt_subject').value, topic: document.getElementById('tt_topic').value, createdBy: currentUser.name });
+            showAlert("Timetable published!"); document.getElementById('timetableForm').reset(); loadAdminTimetables();
+        });
+
+        async function loadAdminTimetables() {
+            const tbody = document.getElementById('ttAdminTableBody'); const snaps = await getDocs(collection(db, "timetables"));
+            let tts = []; snaps.forEach(d => { let obj = d.data(); obj.id = d.id; tts.push(obj); }); tts.sort((a, b) => new Date(b.date) - new Date(a.date)); tbody.innerHTML = '';
+            tts.forEach(t => { tbody.innerHTML += `<tr class="border-b"><td class="p-3 font-semibold">${t.date}</td><td class="p-3">${t.subject}</td><td class="p-3">${t.topic}</td><td class="p-3"><button onclick="deleteTimetable('${t.id}')" class="text-red-500 text-xs font-bold"><i class="fas fa-trash"></i></button></td></tr>`; });
+        }
+        window.deleteTimetable = async (id) => { if(await showConfirm("Delete this timetable entry?")) { await deleteDoc(doc(db, "timetables", id)); loadAdminTimetables(); } };
+
+        async function loadStudentTimetables() {
+            const today = new Date(); const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+            const todayStr = today.toISOString().split('T')[0]; const yestStr = yesterday.toISOString().split('T')[0];
+            const todayCont = document.getElementById('studentTtToday'); const yestCont = document.getElementById('studentTtYesterday');
+            todayCont.innerHTML = ''; yestCont.innerHTML = '';
+
+            const snaps = await getDocs(collection(db, "timetables"));
+            let foundT = false, foundY = false;
+            snaps.forEach(d => {
+                const t = d.data();
+                const card = `<div class="bg-white p-3 rounded shadow-sm border-l-4 border-blue-400"><p class="text-xs font-bold text-blue-800 uppercase mb-1">${t.subject}</p><p class="text-sm text-slate-600">${t.topic}</p></div>`;
+                if(t.date === todayStr) { todayCont.innerHTML += card; foundT = true; }
+                if(t.date === yestStr) { yestCont.innerHTML += card; foundY = true; }
+            });
+            if(!foundT) todayCont.innerHTML = '<p class="text-sm text-slate-400 italic">No topics assigned for today.</p>';
+            if(!foundY) yestCont.innerHTML = '<p class="text-sm text-slate-400 italic">No review topics for yesterday.</p>';
+        }
+
+        async function loadAssignDropdowns() {
+            const instSelect = document.getElementById('assignInstitution'); const teachSelect = document.getElementById('assignTeacher');
+            instSelect.innerHTML = '<option value="">-- Select Institution --</option>'; teachSelect.innerHTML = '<option value="">-- Select Teacher --</option>';
+            const snaps = await getDocs(collection(db, "users"));
+            snaps.forEach(docSnap => {
+                const d = docSnap.data();
+                if(d.status === 'blocked') return;
+                if(d.role === 'institution') instSelect.innerHTML += `<option value="${docSnap.id}" data-location="${d.locationLink || ''}">${d.name}</option>`;
+                if(d.role === 'teacher') teachSelect.innerHTML += `<option value="${docSnap.id}">${d.name} ${d.subject ? `(${d.subject})`:''}</option>`;
+            });
+        }
+        document.getElementById('assignMode').addEventListener('change', (e) => document.getElementById('meetLinkDiv').classList.toggle('hidden', e.target.value !== 'Online'));
+        
+        document.getElementById('assignClassForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const instEl = document.getElementById('assignInstitution'); const teachEl = document.getElementById('assignTeacher');
+            const targetDate = document.getElementById('assignDate').value; const targetTime = document.getElementById('assignTime').value;
+            const mode = document.getElementById('assignMode').value; const locLink = instEl.options[instEl.selectedIndex].getAttribute('data-location') || "";
+            
+            // Clash Check Logic
+            const q = query(collection(db, "classes"), where("teacherId", "==", teachEl.value), where("date", "==", targetDate), where("time", "==", targetTime));
+            const clashSnaps = await getDocs(q);
+            let hasClash = false; let clashReason = "";
+            if (!clashSnaps.empty) {
+                if (mode === 'Offline') { hasClash = true; clashReason = "Schedule Clash: Teacher is already assigned to a class at this date and time. Offline overlaps are not allowed."; } 
+                else { clashSnaps.forEach(docSnap => { if (docSnap.data().mode === 'Offline') { hasClash = true; clashReason = "Schedule Clash: Teacher already has an Offline campus class at this time."; } }); }
+            }
+            if (hasClash) { showAlert(clashReason, "Clash Detected"); return; }
+
+            await addDoc(collection(db, "classes"), {
+                institutionId: instEl.value, institutionName: instEl.options[instEl.selectedIndex].text, teacherId: teachEl.value, teacherName: teachEl.options[teachEl.selectedIndex].text,
+                date: targetDate, time: targetTime, subject: document.getElementById('assignSubject').value, portion: document.getElementById('assignPortion').value, mode: mode, link: document.getElementById('meetLink').value || '', locationLink: locLink
+            });
+            showAlert("Class Assigned!"); document.getElementById('assignClassForm').reset(); loadAdminAssignedClasses();
+        });
+
+        async function loadAdminAssignedClasses() {
+            const tbody = document.getElementById('adminClassesTableBody'); const snaps = await getDocs(collection(db, "classes"));
+            let classes = []; snaps.forEach(d => { let obj = d.data(); obj.id = d.id; classes.push(obj); }); classes.sort((a, b) => new Date(b.date) - new Date(a.date)); tbody.innerHTML = '';
+            classes.forEach(c => { tbody.innerHTML += `<tr class="border-b"><td class="p-3 font-semibold text-xs">${c.date} <br><span class="text-slate-500">${c.time}</span></td><td class="p-3 font-bold">${c.institutionName}</td><td class="p-3 text-blue-700 font-bold">${c.teacherName}</td><td class="p-3 text-sm">${c.subject} <br><span class="text-[10px] text-slate-500">${c.portion}</span></td><td class="p-3 text-[10px] font-bold uppercase">${c.mode}</td><td class="p-3"><button onclick="deleteAssignedClass('${c.id}')" class="text-red-500 text-xs font-bold"><i class="fas fa-trash"></i></button></td></tr>`; });
+        }
+        window.deleteAssignedClass = async (id) => { if(await showConfirm("Delete class?")) { await deleteDoc(doc(db, "classes", id)); loadAdminAssignedClasses(); } };
+        
+        window.loadUserAssignedClasses = async () => {
+            if(!currentUser) return;
+            const sDate = document.getElementById('searchClassDate').value; const todayStr = new Date().toISOString().split('T')[0];
+            const nextWeek = new Date(); nextWeek.setDate(nextWeek.getDate() + 7); const nextWeekStr = nextWeek.toISOString().split('T')[0];
+            const todayCont = document.getElementById('todayClassesContainer'); const otherBody = document.getElementById('userClassesTableBody');
+            todayCont.innerHTML = ''; otherBody.innerHTML = '';
+            
+            const snaps = await getDocs(collection(db, "classes"));
+            let todayArr = []; let otherArr = [];
+            
+            // Inst Usernames mapping for student filtering
+            let instUsernamesMap = {};
+            if(currentUser.role === 'student') {
+                const instSnaps = await getDocs(query(collection(db, "users"), where("role", "==", "institution")));
+                instSnaps.forEach(i => instUsernamesMap[i.data().username] = i.id);
+            }
+
+            snaps.forEach(d => {
+                const c = d.data();
+                let shouldShow = false;
+                if(currentUser.role === 'teacher' && c.teacherId === currentUser.id) shouldShow = true;
+                if(currentUser.role === 'institution' && c.institutionId === currentUser.id) shouldShow = true;
+                if(currentUser.role === 'student' && c.institutionId === instUsernamesMap[currentUser.instUsername]) shouldShow = true;
+
+                if(shouldShow) {
+                    if(c.date === todayStr && !sDate) todayArr.push(c);
+                    else { if(sDate && c.date === sDate) otherArr.push(c); else if(!sDate && c.date > todayStr && c.date <= nextWeekStr) otherArr.push(c); }
+                }
+            });
+
+            todayArr.forEach(c => {
+                let target = currentUser.role === 'teacher' ? c.institutionName : "Subject Teacher"; // Privacy logic applied
+                let btn = '';
+                if (c.mode === 'Online') { btn = `<a href="${c.link}" target="_blank" class="block text-center mt-3 bg-blue-500 text-white text-xs font-bold py-2 rounded shadow hover:bg-blue-600">Join Meet</a>`; } 
+                else if (c.mode === 'Offline' && currentUser.role === 'teacher' && c.locationLink) { btn = `<a href="${c.locationLink}" target="_blank" class="block text-center mt-3 bg-green-500 text-white text-xs font-bold py-2 rounded shadow hover:bg-green-600"><i class="fas fa-map-marker-alt"></i> GO (Location)</a>`; } 
+                else { btn = `<div class="block text-center mt-3 bg-slate-200 text-slate-600 text-xs font-bold py-2 rounded">Offline Campus</div>`; }
+                
+                todayCont.innerHTML += `<div class="bg-white p-3 rounded shadow-sm border-l-4 border-indigo-500"><div class="flex justify-between"><h5 class="font-bold text-sm text-indigo-700">${c.time}</h5><span class="text-[10px] font-bold uppercase">${c.mode}</span></div><p class="font-bold text-sm">${target}</p><p class="text-xs text-slate-500">${c.subject} - ${c.portion}</p>${btn}</div>`;
+            });
+            otherArr.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(c => {
+                let target = currentUser.role === 'teacher' ? c.institutionName : "Subject Teacher"; // Privacy logic applied
+                let linkHtml = '';
+                if(c.mode === 'Online') { linkHtml = `<a href="${c.link}" target="_blank" class="text-blue-500 text-xs underline font-bold"><i class="fas fa-video"></i> Link</a>`; }
+                else if(c.mode === 'Offline' && currentUser.role === 'teacher' && c.locationLink) { linkHtml = `<a href="${c.locationLink}" target="_blank" class="text-green-600 text-xs underline font-bold"><i class="fas fa-map-marker-alt"></i> GO</a>`; }
+                else { linkHtml = `<span class="text-xs text-slate-400">Offline</span>`; }
+                otherBody.innerHTML += `<tr class="border-b"><td class="p-3 text-xs font-semibold">${c.date} <br><span class="text-slate-500">${c.time}</span></td><td class="p-3 font-bold">${target}</td><td class="p-3 text-sm">${c.subject}</td><td class="p-3 text-xs">${c.portion}</td><td class="p-3 text-xs uppercase font-bold mr-2">${c.mode} <br> ${linkHtml}</td></tr>`;
+            });
+        };
+
+        async function loadInstDropdownForExams() {
+            const instSelect = document.getElementById('ex_inst');
+            instSelect.innerHTML = '<option value="">-- Select Target Institution --</option>';
+            const snaps = await getDocs(query(collection(db, "users"), where("role", "==", "institution")));
+            snaps.forEach(docSnap => { instSelect.innerHTML += `<option value="${docSnap.data().username}">${docSnap.data().name}</option>`; }); // Link exam to inst username
+        }
+
+        document.getElementById('assignExamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('ex_id').value;
+            const data = {
+                title: document.getElementById('ex_title').value, date: document.getElementById('ex_date').value, instUsername: document.getElementById('ex_inst').value,
+                mode: document.getElementById('ex_mode').value, maxMarks: document.getElementById('ex_max').value, passMarks: document.getElementById('ex_pass').value,
+                link: document.getElementById('ex_link').value, published: false
+            };
+            if(id) { await updateDoc(doc(db, "exams", id), data); showAlert("Exam updated!"); } 
+            else { await addDoc(collection(db, "exams"), data); showAlert("Exam assigned!"); }
+            document.getElementById('assignExamForm').reset(); document.getElementById('ex_id').value = ""; loadAdminExams();
+        });
+
+        async function loadAdminExams() {
+            const tbody = document.getElementById('examsAdminTableBody'); const snaps = await getDocs(collection(db, "exams"));
+            let exams = []; snaps.forEach(d => { let obj = d.data(); obj.id = d.id; exams.push(obj); }); exams.sort((a, b) => new Date(b.date) - new Date(a.date)); tbody.innerHTML = '';
+            exams.forEach(ex => { 
+                let pubBadge = ex.published ? `<span class="px-2 py-1 bg-green-100 text-green-700 rounded text-[10px] font-bold">Published</span>` : `<span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-[10px] font-bold">Draft</span>`;
+                tbody.innerHTML += `<tr class="border-b"><td class="p-3"><span class="font-bold text-slate-700">${ex.title}</span> <br><span class="text-xs text-slate-500"><i class="fas fa-calendar mr-1"></i>${ex.date} | ${ex.mode}</span></td><td class="p-3 font-semibold text-xs">${ex.instUsername}</td><td class="p-3 text-xs">Max: ${ex.maxMarks} <br>Pass: ${ex.passMarks}</td><td class="p-3">${pubBadge}</td><td class="p-3 text-right"><button onclick="editExam('${ex.id}')" class="text-blue-500 hover:text-blue-700 text-xs font-bold mr-3"><i class="fas fa-edit"></i> Edit</button><button onclick="openMarkModal('${ex.id}', '${ex.instUsername}', '${ex.maxMarks}')" class="text-indigo-500 hover:text-indigo-700 text-xs font-bold mr-3"><i class="fas fa-keyboard"></i> Marks</button><button onclick="publishExam('${ex.id}', ${!ex.published})" class="text-green-600 hover:text-green-800 text-xs font-bold"><i class="fas fa-bullhorn"></i> ${ex.published ? 'Unpublish' : 'Publish'}</button></td></tr>`; 
+            });
+        }
+
+        window.editExam = async (id) => {
+            const docSnap = await getDoc(doc(db, "exams", id));
+            if(docSnap.exists()) {
+                const ex = docSnap.data();
+                document.getElementById('ex_id').value = id; document.getElementById('ex_title').value = ex.title; document.getElementById('ex_date').value = ex.date;
+                document.getElementById('ex_inst').value = ex.instUsername; document.getElementById('ex_mode').value = ex.mode; document.getElementById('ex_max').value = ex.maxMarks;
+                document.getElementById('ex_pass').value = ex.passMarks; document.getElementById('ex_link').value = ex.link || "";
+            }
+        };
+
+        window.publishExam = async (id, status) => { await updateDoc(doc(db, "exams", id), { published: status }); showAlert(status ? "Exam Results Published!" : "Results Hidden."); loadAdminExams(); };
+
+        // Mark Entry Logic
+        window.openMarkModal = async (examId, instUsername, maxMarks) => {
+            document.getElementById('me_examId').value = examId; document.getElementById('me_max').value = maxMarks;
+            const tbody = document.getElementById('markEntryTableBody'); tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center">Loading students...</td></tr>';
+            document.getElementById('markEntryModal').classList.remove('hidden');
+
+            // Fetch students of this inst
+            const studentSnaps = await getDocs(query(collection(db, "users"), where("role", "==", "student"), where("instUsername", "==", instUsername)));
+            // Fetch existing marks for this exam
+            const marksSnaps = await getDocs(query(collection(db, "marks"), where("examId", "==", examId)));
+            let marksMap = {}; marksSnaps.forEach(m => { marksMap[m.data().studentId] = { val: m.data().marksObtained, docId: m.id }; });
+
+            tbody.innerHTML = '';
+            studentSnaps.forEach(s => {
+                const st = s.data(); const sId = s.id;
+                let existingMark = marksMap[sId] ? marksMap[sId].val : "";
+                let markDocId = marksMap[sId] ? marksMap[sId].docId : "";
+                tbody.innerHTML += `<tr class="border-b"><td class="p-3 font-semibold">${st.name}</td><td class="p-3 text-xs text-slate-500">@${st.username}</td><td class="p-3"><input type="number" data-sid="${sId}" data-sname="${st.name}" data-mid="${markDocId}" value="${existingMark}" class="mark-input border p-1 rounded w-full text-sm" placeholder="out of ${maxMarks}"></td></tr>`;
+            });
+            if(studentSnaps.empty) tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-slate-500">No students found for this institution.</td></tr>';
+        };
+
+        window.closeMarkModal = () => document.getElementById('markEntryModal').classList.add('hidden');
+        window.saveMarks = async () => {
+            const examId = document.getElementById('me_examId').value;
+            const inputs = document.querySelectorAll('.mark-input');
+            for(let input of inputs) {
+                let val = input.value; let sId = input.getAttribute('data-sid'); let sName = input.getAttribute('data-sname'); let mId = input.getAttribute('data-mid');
+                if(val !== "") {
+                    if(mId) { await updateDoc(doc(db, "marks", mId), { marksObtained: parseFloat(val) }); } 
+                    else { await addDoc(collection(db, "marks"), { examId: examId, studentId: sId, studentName: sName, marksObtained: parseFloat(val) }); }
+                }
+            }
+            showAlert("Marks saved successfully!"); closeMarkModal();
+        };
+
+        // Shared: View Exams & Marks
+        async function loadExamsView() {
+            if(!currentUser) return;
+            document.getElementById('printReportUser').innerText = currentUser.name + (currentUser.role === 'institution' ? " (Institution View)" : " (Student View)");
+            
+            const tbody = document.getElementById('examsViewTableBody');
+            const userColHeader = document.getElementById('examViewUserCol');
+            userColHeader.classList.toggle('hidden', currentUser.role === 'student'); // Hide student col for student himself
+            tbody.innerHTML = '';
+
+            let targetInstUsername = currentUser.role === 'student' ? currentUser.instUsername : currentUser.username;
+
+            // Fetch published exams for this inst
+            const examSnaps = await getDocs(query(collection(db, "exams"), where("instUsername", "==", targetInstUsername), where("published", "==", true)));
+            if(examSnaps.empty) { tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">No exams published yet.</td></tr>'; return; }
+
+            for (const docSnap of examSnaps.docs) {
+                const ex = docSnap.data();
+                
+                // If student, fetch only their mark. If inst, fetch all marks for this exam.
+                let marksQuery = currentUser.role === 'student' ? query(collection(db, "marks"), where("examId", "==", docSnap.id), where("studentId", "==", currentUser.id)) : query(collection(db, "marks"), where("examId", "==", docSnap.id));
+                const marksSnaps = await getDocs(marksQuery);
+                
+                if(marksSnaps.empty && currentUser.role === 'student') {
+                    // Exam exists but no marks entered for this student yet
+                    let linkHtml = ex.mode === 'Online' && ex.link ? `<a href="${ex.link}" target="_blank" class="text-blue-500 underline ml-2"><i class="fas fa-link"></i></a>` : '';
+                    tbody.innerHTML += `<tr><td class="border p-3 text-xs">${ex.date}</td><td class="border p-3 font-bold text-slate-700">${ex.title} ${linkHtml}</td><td class="border p-3 text-center">${ex.maxMarks}</td><td class="border p-3 text-center">-</td><td class="border p-3 text-center"><span class="text-slate-400 text-xs">Pending</span></td></tr>`;
+                }
+
+                marksSnaps.forEach(mSnap => {
+                    const mk = mSnap.data();
+                    let passStatus = parseFloat(mk.marksObtained) >= parseFloat(ex.passMarks) ? `<span class="text-green-600 font-bold">PASS</span>` : `<span class="text-red-600 font-bold">FAIL</span>`;
+                    let studentColHtml = currentUser.role === 'institution' ? `<td class="border p-3">${mk.studentName}</td>` : '';
+                    let linkHtml = ex.mode === 'Online' && ex.link ? `<a href="${ex.link}" target="_blank" class="text-blue-500 underline ml-2 no-print"><i class="fas fa-link"></i></a>` : '';
+                    
+                    tbody.innerHTML += `<tr><td class="border p-3 text-xs">${ex.date}</td><td class="border p-3 font-bold text-slate-700">${ex.title} ${linkHtml}</td>${studentColHtml}<td class="border p-3 text-center">${ex.maxMarks}</td><td class="border p-3 text-center font-bold text-indigo-700">${mk.marksObtained}</td><td class="border p-3 text-center">${passStatus}</td></tr>`;
+                });
+            }
+        }
+
+        document.getElementById('askDoubtForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "doubts"), {
+                subject: document.getElementById('d_subject').value, chapter: document.getElementById('d_chapter').value, question: document.getElementById('d_question').value,
+                authorName: currentUser.name, authorRole: currentUser.role, date: new Date().toISOString()
+            });
+            showAlert("Doubt submitted successfully!"); document.getElementById('askDoubtForm').reset(); document.getElementById('askDoubtModal').classList.add('hidden'); loadDoubts();
+        });
+
+        async function loadDoubts() {
+            const container = document.getElementById('doubtsListContainer');
+            container.innerHTML = '<p class="text-center text-slate-500 p-4">Loading discussions...</p>';
+            const snaps = await getDocs(collection(db, "doubts"));
+            let doubts = []; snaps.forEach(d => { let obj = d.data(); obj.id = d.id; doubts.push(obj); });
+            doubts.sort((a,b) => new Date(b.date) - new Date(a.date));
+            container.innerHTML = '';
+            if(doubts.length === 0) container.innerHTML = '<p class="text-center text-slate-500 p-4">No doubts asked yet. Be the first!</p>';
+
+            doubts.forEach(d => {
+                let dDate = new Date(d.date).toLocaleString('en-US', {dateStyle:'medium'});
+                container.innerHTML += `
+                    <div onclick="openDoubtThread('${d.id}')" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-3 cursor-pointer hover:border-purple-400 transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-slate-800">${d.subject} <span class="text-xs font-normal text-slate-500 ml-2">(${d.chapter})</span></h4>
+                            <span class="text-[10px] text-slate-400">${dDate}</span>
+                        </div>
+                        <p class="text-sm text-slate-600 line-clamp-2">${d.question}</p>
+                        <p class="text-[10px] text-purple-600 font-bold mt-2 text-right">- ${d.authorName} (${d.authorRole})</p>
+                    </div>
+                `;
+            });
+        }
+
+        window.openDoubtThread = async (id) => {
+            document.getElementById('r_doubtId').value = id;
+            document.getElementById('viewDoubtModal').classList.remove('hidden');
+            loadDoubtThread(id);
+        };
+
+        async function loadDoubtThread(id) {
+            const content = document.getElementById('doubtThreadContent');
+            content.innerHTML = '<p class="text-center">Loading...</p>';
+            
+            const docSnap = await getDoc(doc(db, "doubts", id));
+            if(!docSnap.exists()) return;
+            const d = docSnap.data();
+            let dDate = new Date(d.date).toLocaleString('en-US', {dateStyle:'medium', timeStyle:'short'});
+
+            let html = `
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-purple-200 mb-6">
+                    <p class="text-[10px] font-bold text-purple-600 mb-1">${d.subject} | ${d.chapter}</p>
+                    <p class="text-md font-bold text-slate-800 mb-2">${d.question}</p>
+                    <p class="text-[10px] text-slate-400">${d.authorName} &bull; ${dDate}</p>
+                </div>
+                <h5 class="text-xs font-bold text-slate-500 uppercase mb-3 px-2">Replies</h5>
+                <div id="repliesContainer" class="space-y-3"></div>
+            `;
+            content.innerHTML = html;
+
+            const repContainer = document.getElementById('repliesContainer');
+            const repSnaps = await getDocs(query(collection(db, "replies"), where("doubtId", "==", id)));
+            let replies = []; repSnaps.forEach(r => replies.push(r.data()));
+            replies.sort((a,b) => new Date(a.date) - new Date(b.date));
+
+            if(replies.length === 0) repContainer.innerHTML = '<p class="text-xs text-slate-400 italic px-2">No replies yet.</p>';
+            replies.forEach(r => {
+                let rDate = new Date(r.date).toLocaleString('en-US', {dateStyle:'short', timeStyle:'short'});
+                let badge = (r.authorRole === 'admin' || r.authorRole === 'teacher') ? `<i class="fas fa-check-circle text-green-500 ml-1"></i>` : '';
+                let textHtml = r.text.startsWith('http') ? `<a href="${r.text}" target="_blank" class="text-blue-500 underline break-words">${r.text}</a>` : `<p class="text-sm text-slate-700 whitespace-pre-wrap">${r.text}</p>`;
+                repContainer.innerHTML += `
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-100 ml-4">
+                        <p class="text-[10px] font-bold text-slate-500 mb-1">${r.authorName} ${badge} <span class="float-right font-normal">${rDate}</span></p>
+                        ${textHtml}
+                    </div>
+                `;
+            });
+            content.scrollTop = content.scrollHeight; // Scroll to bottom
+        }
+
+        document.getElementById('replyDoubtForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const dId = document.getElementById('r_doubtId').value;
+            const text = document.getElementById('r_text').value;
+            await addDoc(collection(db, "replies"), { doubtId: dId, text: text, authorName: currentUser.name, authorRole: currentUser.role, date: new Date().toISOString() });
+            document.getElementById('r_text').value = ''; loadDoubtThread(dId);
+        });
+
+        // Admin Activity Report and Teacher Activity Report
+        window.loadAdminActivityReport = async () => { 
+            const tbody = document.getElementById('adminActivityTableBody'); const sDate = document.getElementById('filterStartDate').value; const eDate = document.getElementById('filterEndDate').value; const selIds = Array.from(document.querySelectorAll('.filter-teacher-cb:checked')).map(cb => cb.value);
+            const snaps = await getDocs(collection(db, "classes")); tbody.innerHTML = ''; let count = 0;
+            snaps.forEach(docSnap => {
+                const c = docSnap.data();
+                if((selIds.length === 0 || selIds.includes(c.teacherId)) && (!sDate || c.date >= sDate) && (!eDate || c.date <= eDate)) { count++; tbody.innerHTML += `<tr><td class="border p-2">${c.date} ${c.time}</td><td class="border p-2 font-bold">${c.teacherName}</td><td class="border p-2">${c.institutionName}</td><td class="border p-2">${c.subject}<br><span class="text-xs text-slate-500">${c.portion}</span></td><td class="border p-2">${c.mode}</td></tr>`; }
+            }); if(count === 0) tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center">No data found.</td></tr>';
+        };
+        async function loadTeacherCheckboxes() { const container = document.getElementById('activityTeacherList'); const snaps = await getDocs(query(collection(db, "users"), where("role", "==", "teacher"))); container.innerHTML = ''; snaps.forEach(docSnap => { container.innerHTML += `<label class="flex items-center space-x-2"><input type="checkbox" value="${docSnap.id}" class="filter-teacher-cb"> <span>${docSnap.data().name}</span></label>`; }); }
+        async function loadMyActivityReport() { if(!currentUser || currentUser.role !== 'teacher') return; const snaps = await getDocs(query(collection(db, "classes"), where("teacherId", "==", currentUser.id))); const tbody = document.getElementById('teacherActivityTableBody'); tbody.innerHTML = ''; let classes = []; snaps.forEach(d => classes.push(d.data())); classes.sort((a, b) => new Date(b.date) - new Date(a.date)); classes.forEach(c => { tbody.innerHTML += `<tr><td class="border p-2">${c.date} ${c.time}</td><td class="border p-2 font-bold">${c.institutionName}</td><td class="border p-2">${c.subject}</td><td class="border p-2 text-xs">${c.portion}</td><td class="border p-2">${c.mode}</td></tr>`; }); }
+
+    </script>
+</body>
+</html>
