@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- SEO and Link Sharing Tags (For WhatsApp, Facebook, etc.) -->
+    <!-- SEO and Link Sharing Tags (Updated with Google Drive Direct Link) -->
     <title>Delta Academy B2B Portal</title>
     <meta property="og:title" content="Delta Academy Portal">
     <meta property="og:description" content="Official B2B Education Portal for Delta Academy Network.">
-    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/3176/3176273.png">
+    <meta property="og:image" content="https://drive.google.com/uc?id=1DqnP1rTWv_kG_vL09HCGx1ddmxJ6ZQpP">
     <meta property="og:type" content="website">
     
     <!-- PWA Setup Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#334155">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3176/3176273.png">
+    <link rel="apple-touch-icon" href="https://drive.google.com/uc?id=1DqnP1rTWv_kG_vL09HCGx1ddmxJ6ZQpP">
     
     <!-- Preconnect for faster loading -->
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
@@ -25,10 +25,62 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        /* Initial Fast Loading Screen CSS */
-        #initialLoader { position: fixed; inset: 0; background: #f8fafc; z-index: 999999; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.5s ease; }
-        .spinner { border: 4px solid #cbd5e1; border-top: 4px solid #475569; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Modern Intro Animation CSS */
+        #introScreen {
+            position: fixed;
+            inset: 0;
+            background: #f8fafc;
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+        }
+
+        .logo-container {
+            position: relative;
+            transform: translateY(-150vh); 
+            animation: dropIn 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .intro-logo {
+            width: 180px;
+            height: auto;
+            max-width: 80vw;
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.2));
+            animation: breathe 2s ease-in-out 1.2s infinite alternate; 
+        }
+
+        .glow-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(14,165,233,0.4) 0%, rgba(14,165,233,0) 70%);
+            z-index: -1;
+            opacity: 0;
+            border-radius: 50%;
+            animation: glowFadeIn 1s ease-out 1.2s forwards;
+        }
+
+        @keyframes dropIn {
+            0% { transform: translateY(-150vh) scale(0.8); opacity: 0; }
+            60% { transform: translateY(20px) scale(1.05); opacity: 1; }
+            80% { transform: translateY(-10px) scale(0.98); opacity: 1; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        @keyframes breathe {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.03); }
+        }
+
+        @keyframes glowFadeIn {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+        }
 
         .gradient-sidebar { background: linear-gradient(180deg, #475569 0%, #334155 100%); }
         .gradient-btn { background: linear-gradient(90deg, #64748b 0%, #475569 100%); color: white; }
@@ -42,13 +94,11 @@
             .print-area { box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
         }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Extreme Hide Netlify Watermark */
         a[href*="netlify.com"], a[title*="Netlify"], iframe[title*="netlify"], iframe[src*="netlify"], div[id*="netlify"], div[class*="netlify"], .netlify-badge, #netlify-badge {
             display: none !important; opacity: 0 !important; visibility: hidden !important; width: 0 !important; height: 0 !important; pointer-events: none !important; position: absolute !important; z-index: -9999 !important;
         }
@@ -56,10 +106,13 @@
 </head>
 <body class="bg-gray-50 h-screen font-sans text-gray-800 flex overflow-hidden">
 
-    <!-- Fast Loading Screen (Disappears when ready) -->
-    <div id="initialLoader">
-        <div class="spinner"></div>
-        <p style="margin-top:15px; font-family:sans-serif; color:#475569; font-weight:bold; letter-spacing:1px;">Loading Delta Academy...</p>
+    <!-- Intro Animation Screen -->
+    <div id="introScreen">
+        <div class="logo-container">
+            <div class="glow-effect"></div>
+            <!-- Dynamic Logo -->
+            <img id="introLogoImg" src="https://drive.google.com/uc?id=1DqnP1rTWv_kG_vL09HCGx1ddmxJ6ZQpP" alt="Delta Academy Logo" class="intro-logo">
+        </div>
     </div>
 
     <!-- Custom Alert Modal -->
@@ -88,7 +141,7 @@
     </div>
 
     <!-- Login Screen -->
-    <div id="loginScreen" class="absolute inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 bg-gradient-to-b from-gray-400 to-gray-600 no-print transition-all duration-500 bg-cover bg-center p-4">
+    <div id="loginScreen" class="hidden absolute inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 bg-gradient-to-b from-gray-400 to-gray-600 no-print transition-all duration-500 bg-cover bg-center p-4">
         <div class="bg-gray-100 rounded-xl shadow-2xl w-full max-w-[400px] overflow-hidden flex flex-col border border-gray-300/50 relative z-10">
             <div class="bg-gradient-to-b from-[#8f92a1] to-[#717386] p-8 md:p-10 text-center">
                 <h1 class="text-3xl md:text-4xl font-bold text-white mb-2 tracking-wide drop-shadow-md">DELTA</h1>
@@ -117,6 +170,7 @@
                 </div>
             </div>
         </div>
+        <div class="absolute inset-0 bg-black/10 pointer-events-none"></div>
     </div>
 
     <!-- Main Dashboard -->
@@ -208,14 +262,12 @@
 
             <main class="p-4 md:p-8 print-area relative flex-1">
                 
-                <!-- Welcome Section with Quick Access Shortcuts -->
                 <div id="welcomeSection" class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden no-print">
                     <div class="absolute top-0 right-0 w-64 h-64 bg-slate-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 -mr-20 -mt-20"></div>
                     <div class="relative z-10">
                         <h3 class="text-xl md:text-2xl font-bold mb-2 text-slate-700">Welcome to Delta Academy</h3>
                         <p class="text-sm md:text-base text-slate-500 mb-8">Select an option from the menu to manage your activities.</p>
                         
-                        <!-- Quick Access Shortcuts Grid -->
                         <div id="quickAccessGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-6">
                             <!-- Populated dynamically via Javascript based on user role -->
                         </div>
@@ -225,18 +277,35 @@
                 <!-- Admin: Layout Settings -->
                 <div id="layoutSection" class="hidden no-print space-y-6">
                     <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border-t-4 border-emerald-500">
-                        <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-image mr-2 text-emerald-500"></i> Login Background Settings</h3>
-                        <p class="text-xs text-slate-500 mb-4">Upload a new background image for the login screen. It will be stored in your Google Drive securely.</p>
-                        <form id="layoutForm" class="space-y-4">
+                        <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-image mr-2 text-emerald-500"></i> App Layout Settings</h3>
+                        <p class="text-xs text-slate-500 mb-6">Customize the look and feel of the application.</p>
+                        
+                        <!-- Background Image Form -->
+                        <form id="layoutForm" class="space-y-4 mb-6 pb-6 border-b border-slate-200">
                             <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-2">Upload New Background Image</label>
+                                <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">1. Login Background Image</label>
                                 <div class="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                                     <img id="currentBgPreview" src="" class="hidden h-20 w-32 object-cover rounded shadow border border-slate-200">
                                     <input type="file" id="bg_photo" accept="image/*" required class="text-sm w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
                                 </div>
                             </div>
-                            <div class="flex justify-end pt-4 border-t">
+                            <div class="flex justify-end">
                                 <button type="submit" id="saveLayoutBtn" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded font-bold shadow text-sm"><i class="fas fa-save mr-1"></i> Update Background</button>
+                            </div>
+                        </form>
+
+                        <!-- Logo Form -->
+                        <form id="logoForm" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wide">2. Intro Animation Logo</label>
+                                <p class="text-[10px] text-slate-500 mb-2">This logo appears with a dropping animation when the app is opened.</p>
+                                <div class="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                                    <img id="currentLogoPreview" src="https://drive.google.com/uc?id=1DqnP1rTWv_kG_vL09HCGx1ddmxJ6ZQpP" class="h-20 w-20 object-contain rounded shadow border border-slate-200 bg-slate-50">
+                                    <input type="file" id="logo_photo" accept="image/*" required class="text-sm w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" id="saveLogoBtn" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded font-bold shadow text-sm"><i class="fas fa-save mr-1"></i> Update Logo</button>
                             </div>
                         </form>
                     </div>
@@ -613,12 +682,18 @@
         const db = getFirestore(app);
         let currentUser = null;
 
-        // Hide the initial loader once javascript is ready
+        // Intro Animation Logic
         window.addEventListener('load', () => {
-            const loader = document.getElementById('initialLoader');
-            if(loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500);
+            const intro = document.getElementById('introScreen');
+            const login = document.getElementById('loginScreen');
+            
+            if(intro) {
+                setTimeout(() => {
+                    intro.style.opacity = '0';
+                    intro.style.visibility = 'hidden';
+                    login.classList.remove('hidden');
+                    setTimeout(() => intro.remove(), 600); 
+                }, 2500); 
             }
         });
 
@@ -742,7 +817,10 @@
         async function loadInitialSettings() {
             try {
                 const snap = await getDoc(doc(db, "settings", "layout"));
-                if(snap.exists() && snap.data().loginBgUrl) { applyLoginBackground(snap.data().loginBgUrl); }
+                if(snap.exists()) {
+                    if(snap.data().loginBgUrl) applyLoginBackground(snap.data().loginBgUrl);
+                    if(snap.data().logoUrl) applyLogo(snap.data().logoUrl);
+                }
             } catch(e) { console.log("No layout set or error"); }
         }
         
@@ -752,6 +830,14 @@
             ls.classList.remove('bg-gradient-to-b', 'from-gray-400', 'to-gray-600');
             
             const preview = document.getElementById('currentBgPreview');
+            if(preview) { preview.src = url; preview.classList.remove('hidden'); }
+        }
+
+        function applyLogo(url) {
+            const introLogo = document.getElementById('introLogoImg');
+            if(introLogo) introLogo.src = url;
+            
+            const preview = document.getElementById('currentLogoPreview');
             if(preview) { preview.src = url; preview.classList.remove('hidden'); }
         }
         
@@ -771,7 +857,7 @@
                 const photoUrl = await uploadToDrive(base64Image, fileInput.files[0].name);
                 
                 if(photoUrl) {
-                    await setDoc(doc(db, "settings", "layout"), { loginBgUrl: photoUrl });
+                    await setDoc(doc(db, "settings", "layout"), { loginBgUrl: photoUrl }, { merge: true });
                     showAlert("Background updated successfully!");
                     applyLoginBackground(photoUrl);
                 } else {
@@ -780,6 +866,32 @@
             } catch(err) { showAlert("Error updating background."); }
             
             btn.innerHTML = '<i class="fas fa-save mr-1"></i> Update Background';
+            btn.disabled = false;
+        });
+
+        document.getElementById('logoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('logo_photo');
+            if(fileInput.files.length === 0) return showAlert("Please select a logo first.");
+            
+            const btn = document.getElementById('saveLogoBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Uploading...';
+            btn.disabled = true;
+            
+            try {
+                const base64Image = await fileToBase64(fileInput.files[0]);
+                const photoUrl = await uploadToDrive(base64Image, fileInput.files[0].name);
+                
+                if(photoUrl) {
+                    await setDoc(doc(db, "settings", "layout"), { logoUrl: photoUrl }, { merge: true });
+                    showAlert("Logo updated successfully!");
+                    applyLogo(photoUrl);
+                } else {
+                    showAlert("Failed to upload logo to Drive.");
+                }
+            } catch(err) { showAlert("Error updating logo."); }
+            
+            btn.innerHTML = '<i class="fas fa-save mr-1"></i> Update Logo';
             btn.disabled = false;
         });
 
@@ -1075,7 +1187,7 @@
             let foundT = false, foundY = false;
             snaps.forEach(d => {
                 const t = d.data();
-                const card = `<div class="bg-white p-3 md:p-4 rounded shadow-sm border-l-4 border-blue-400"><p class="text-xs font-bold text-blue-800 uppercase mb-1">${t.subject}</p><p class="text-sm text-slate-600">${t.topic}</p></div>`;
+                const card = `<div class="bg-white p-3 rounded shadow-sm border-l-4 border-blue-400"><p class="text-xs font-bold text-blue-800 uppercase mb-1">${t.subject}</p><p class="text-sm text-slate-600">${t.topic}</p></div>`;
                 if(t.date === todayStr) { todayCont.innerHTML += card; foundT = true; }
                 if(t.date === yestStr) { yestCont.innerHTML += card; foundY = true; }
             });
@@ -1384,9 +1496,20 @@
 </html>
 ```eof
 
-**വാട്സ്ആപ്പിൽ ഷെയർ ചെയ്യുമ്പോൾ ശ്രദ്ധിക്കേണ്ടത്:**
-വാട്സ്ആപ്പിൽ നിങ്ങൾ പഴയ ലിങ്ക് അയക്കുമ്പോൾ ആ പഴയ ഐക്കൺ (ലോഗോ) തന്നെ വീണ്ടും കാണിക്കുകയാണെങ്കിൽ, അത് വാട്സ്ആപ്പ് ഫോണിൽ സേവ് ചെയ്ത് വെച്ചിരിക്കുന്നതുകൊണ്ടാണ് (Cache). 
-
-അത് ഒഴിവാക്കി പുതിയ ലോഗോ വരാനായി നിങ്ങളുടെ ലിങ്കിന്റെ കൂടെ എപ്പോഴും `/?v=1` എന്ന് ചേർത്ത് ഒരാൾക്ക് മെസ്സേജ് അയച്ചു നോക്കുക. അതായത് ഈ ലിങ്ക് അയക്കുക: **`[https://delta-accademy.netlify.app/?v=1](https://delta-accademy.netlify.app/?v=1)`** 
-
-അങ്ങനെ അയക്കുമ്പോൾ ആ പഴയ ലോഗോ മാറി നിങ്ങളുടെ പുതിയ ലോഗോ (Delta Academy) കൃത്യമായി അവിടെ കാണാൻ സാധിക്കും.
+```json:manifest.json
+{
+    "name": "Delta Academy Portal",
+    "short_name": "Delta",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#f8fafc",
+    "theme_color": "#334155",
+    "icons": [
+        {
+            "src": "https://drive.google.com/uc?id=1DqnP1rTWv_kG_vL09HCGx1ddmxJ6ZQpP",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
+```eof
