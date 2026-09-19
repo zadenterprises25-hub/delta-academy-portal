@@ -3,16 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO and Link Sharing Tags (For WhatsApp, Facebook, etc.) -->
     <title>Delta Academy B2B Portal</title>
+    <meta property="og:title" content="Delta Academy Portal">
+    <meta property="og:description" content="Official B2B Education Portal for Delta Academy Network.">
+    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/3176/3176273.png">
+    <meta property="og:type" content="website">
     
     <!-- PWA Setup Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#334155">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3176/3176273.png">
     
+    <!-- Preconnect for faster loading -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://www.gstatic.com">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
+        /* Initial Fast Loading Screen CSS */
+        #initialLoader { position: fixed; inset: 0; background: #f8fafc; z-index: 999999; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.5s ease; }
+        .spinner { border: 4px solid #cbd5e1; border-top: 4px solid #475569; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         .gradient-sidebar { background: linear-gradient(180deg, #475569 0%, #334155 100%); }
         .gradient-btn { background: linear-gradient(90deg, #64748b 0%, #475569 100%); color: white; }
         .gradient-btn:hover { background: linear-gradient(90deg, #475569 0%, #334155 100%); }
@@ -25,26 +42,25 @@
             .print-area { box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
         }
         
-        /* Custom Scrollbar for better UI */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Hide Netlify Watermark */
-        a[href*="netlify.com"], 
-        iframe[title*="netlify"],
-        iframe[src*="netlify"],
-        div[id*="netlify"], 
-        div[class*="netlify"] {
-            display: none !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-            pointer-events: none !important;
+        /* Extreme Hide Netlify Watermark */
+        a[href*="netlify.com"], a[title*="Netlify"], iframe[title*="netlify"], iframe[src*="netlify"], div[id*="netlify"], div[class*="netlify"], .netlify-badge, #netlify-badge {
+            display: none !important; opacity: 0 !important; visibility: hidden !important; width: 0 !important; height: 0 !important; pointer-events: none !important; position: absolute !important; z-index: -9999 !important;
         }
     </style>
 </head>
 <body class="bg-gray-50 h-screen font-sans text-gray-800 flex overflow-hidden">
+
+    <!-- Fast Loading Screen (Disappears when ready) -->
+    <div id="initialLoader">
+        <div class="spinner"></div>
+        <p style="margin-top:15px; font-family:sans-serif; color:#475569; font-weight:bold; letter-spacing:1px;">Loading Delta Academy...</p>
+    </div>
 
     <!-- Custom Alert Modal -->
     <div id="customAlertModal" class="hidden fixed inset-0 bg-slate-900/60 z-[100] flex items-center justify-center p-4">
@@ -72,16 +88,14 @@
     </div>
 
     <!-- Login Screen -->
-    <!-- Added pt-16 to move box to top, bg-cover to adjust background dynamically -->
-    <div id="loginScreen" class="absolute inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 bg-gradient-to-b from-gray-400 to-gray-600 no-print transition-all duration-500 bg-cover bg-center">
-        <div class="bg-gray-100 rounded-xl shadow-2xl w-[400px] overflow-hidden flex flex-col border border-gray-300/50 relative z-10">
-            <div class="bg-gradient-to-b from-[#8f92a1] to-[#717386] p-10 text-center">
-                <h1 class="text-4xl font-bold text-white mb-2 tracking-wide drop-shadow-md">DELTA</h1>
+    <div id="loginScreen" class="absolute inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 bg-gradient-to-b from-gray-400 to-gray-600 no-print transition-all duration-500 bg-cover bg-center p-4">
+        <div class="bg-gray-100 rounded-xl shadow-2xl w-full max-w-[400px] overflow-hidden flex flex-col border border-gray-300/50 relative z-10">
+            <div class="bg-gradient-to-b from-[#8f92a1] to-[#717386] p-8 md:p-10 text-center">
+                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2 tracking-wide drop-shadow-md">DELTA</h1>
                 <p class="text-[10px] font-bold text-gray-200 tracking-[0.25em] uppercase">B2B Academy Portal</p>
             </div>
             
-            <div class="p-8 bg-gradient-to-b from-gray-100 to-gray-200 flex-1 relative">
-                <!-- Block Message Display -->
+            <div class="p-6 md:p-8 bg-gradient-to-b from-gray-100 to-gray-200 flex-1 relative">
                 <div id="blockMessageContainer" class="hidden flex-col items-center justify-center text-center py-6">
                     <i class="fas fa-ban text-red-500 text-6xl mb-4 drop-shadow-md"></i>
                     <h2 class="text-xl font-black text-red-600 uppercase mb-2">Access Denied!</h2>
@@ -93,8 +107,8 @@
                 </div>
 
                 <div id="loginFormContainer">
-                    <h2 class="text-lg font-bold text-gray-500 mb-6 text-center">Sign In to Your Account</h2>
-                    <form id="loginForm" class="space-y-5">
+                    <h2 class="text-md md:text-lg font-bold text-gray-500 mb-6 text-center">Sign In to Your Account</h2>
+                    <form id="loginForm" class="space-y-4 md:space-y-5">
                         <div><label class="block text-xs font-semibold text-gray-500 mb-1">Username</label><input type="text" id="username" class="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white" required></div>
                         <div><label class="block text-xs font-semibold text-gray-500 mb-1">Password</label><input type="password" id="password" class="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white" required></div>
                         <button type="submit" class="w-full gradient-btn py-3 rounded-md font-bold shadow-md hover:-translate-y-0.5 mt-2 transition">Login securely</button>
@@ -103,56 +117,62 @@
                 </div>
             </div>
         </div>
-        <!-- Dark overlay to ensure text is readable if image is too bright, optional -->
-        <div class="absolute inset-0 bg-black/10 pointer-events-none"></div>
     </div>
 
     <!-- Main Dashboard -->
     <div id="mainDashboard" class="hidden w-full h-full flex overflow-hidden">
         
-        <!-- Sidebar -->
-        <div class="w-64 gradient-sidebar text-white flex flex-col shadow-2xl z-10 border-r border-slate-700 shrink-0 no-print">
-            <div class="p-6 text-center border-b border-slate-600/50">
+        <!-- Mobile Sidebar Overlay -->
+        <div id="sidebarOverlay" class="hidden fixed inset-0 bg-slate-900/60 z-30 md:hidden backdrop-blur-sm transition-opacity"></div>
+
+        <!-- Responsive Sidebar -->
+        <div id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-300 ease-in-out w-64 gradient-sidebar text-white flex flex-col shadow-2xl z-40 border-r border-slate-700 shrink-0 no-print h-full">
+            
+            <button id="closeSidebarBtn" class="md:hidden absolute top-4 right-4 text-slate-300 hover:text-white p-2">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <div class="p-6 text-center border-b border-slate-600/50 mt-4 md:mt-0">
                 <h2 class="text-3xl font-extrabold tracking-tight drop-shadow-md">DELTA</h2>
                 <p class="text-[10px] font-medium text-slate-300 mt-1 uppercase tracking-widest">Academy Network</p>
             </div>
             <nav class="flex-1 p-4 space-y-1 overflow-y-auto mt-2">
-                <a href="#" onclick="showSection('welcomeSection')" class="flex items-center px-4 py-2.5 rounded-lg bg-white/10 text-white font-medium shadow-sm border border-white/5 text-sm"><i class="fas fa-home w-6 text-lg"></i> Dashboard</a>
-                <a href="#" onclick="showSection('notificationsSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-bell w-6 text-slate-300"></i> Notifications</a>
-                <a href="#" onclick="showSection('doubtsSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-comments w-6 text-slate-300"></i> Doubt Forum</a>
+                <a href="#" onclick="showSection('welcomeSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg bg-white/10 text-white font-medium shadow-sm border border-white/5 text-sm"><i class="fas fa-home w-6 text-lg"></i> Dashboard</a>
+                <a href="#" onclick="showSection('notificationsSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-bell w-6 text-slate-300"></i> Notifications</a>
+                <a href="#" onclick="showSection('doubtsSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-comments w-6 text-slate-300"></i> Doubt Forum</a>
 
                 <!-- Admin Controls -->
                 <div id="adminMenu" class="hidden space-y-1 mt-6">
                     <p class="text-[10px] font-bold text-slate-400 uppercase px-4 mb-2 tracking-widest">Admin Controls</p>
-                    <a href="#" onclick="showSection('layoutSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-image w-6 text-slate-300"></i> Layout Settings</a>
-                    <a href="#" onclick="showSection('manageUsersSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-users w-6 text-slate-300"></i> Manage Users</a>
-                    <a href="#" onclick="showSection('passwordManagerSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-key w-6 text-slate-300"></i> Passwords</a>
-                    <a href="#" onclick="showSection('timetableAdminSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-clock w-6 text-slate-300"></i> Study Timetable</a>
-                    <a href="#" onclick="showSection('assignClassesSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-chalkboard-teacher w-6 text-slate-300"></i> Assign Classes</a>
-                    <a href="#" onclick="showSection('examsAdminSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-file-alt w-6 text-slate-300"></i> Manage Exams</a>
-                    <a href="#" onclick="showSection('activityAdminSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-chart-line w-6 text-slate-300"></i> Teachers Activity</a>
+                    <a href="#" onclick="showSection('layoutSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-image w-6 text-slate-300"></i> Layout Settings</a>
+                    <a href="#" onclick="showSection('manageUsersSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-users w-6 text-slate-300"></i> Manage Users</a>
+                    <a href="#" onclick="showSection('passwordManagerSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-key w-6 text-slate-300"></i> Passwords</a>
+                    <a href="#" onclick="showSection('timetableAdminSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-clock w-6 text-slate-300"></i> Study Timetable</a>
+                    <a href="#" onclick="showSection('assignClassesSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-chalkboard-teacher w-6 text-slate-300"></i> Assign Classes</a>
+                    <a href="#" onclick="showSection('examsAdminSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-file-alt w-6 text-slate-300"></i> Manage Exams</a>
+                    <a href="#" onclick="showSection('activityAdminSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-chart-line w-6 text-slate-300"></i> Teachers Activity</a>
                 </div>
 
                 <!-- Teacher Controls -->
                 <div id="teacherMenu" class="hidden space-y-1 mt-6">
                     <p class="text-[10px] font-bold text-slate-400 uppercase px-4 mb-2 tracking-widest">Teacher Menu</p>
-                    <a href="#" onclick="showSection('assignedClassesViewSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-calendar-check w-6 text-slate-300"></i> Assigned Classes</a>
-                    <a href="#" onclick="showSection('activityTeacherSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-tasks w-6 text-slate-300"></i> Activity Report</a>
+                    <a href="#" onclick="showSection('assignedClassesViewSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-calendar-check w-6 text-slate-300"></i> Assigned Classes</a>
+                    <a href="#" onclick="showSection('activityTeacherSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-tasks w-6 text-slate-300"></i> Activity Report</a>
                 </div>
 
                 <!-- Institution Controls -->
                 <div id="institutionMenu" class="hidden space-y-1 mt-6">
                     <p class="text-[10px] font-bold text-slate-400 uppercase px-4 mb-2 tracking-widest">Institution Menu</p>
-                    <a href="#" onclick="showSection('assignedClassesViewSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-calendar-check w-6 text-slate-300"></i> Assigned Classes</a>
-                    <a href="#" onclick="showSection('examsViewSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-award w-6 text-slate-300"></i> Exams & Marks</a>
+                    <a href="#" onclick="showSection('assignedClassesViewSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-calendar-check w-6 text-slate-300"></i> Assigned Classes</a>
+                    <a href="#" onclick="showSection('examsViewSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-award w-6 text-slate-300"></i> Exams & Marks</a>
                 </div>
 
                 <!-- Student Controls -->
                 <div id="studentMenu" class="hidden space-y-1 mt-6">
                     <p class="text-[10px] font-bold text-slate-400 uppercase px-4 mb-2 tracking-widest">Student Menu</p>
-                    <a href="#" onclick="showSection('timetableStudentSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-book-reader w-6 text-slate-300"></i> Study Timetable</a>
-                    <a href="#" onclick="showSection('assignedClassesViewSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-video w-6 text-slate-300"></i> My Classes</a>
-                    <a href="#" onclick="showSection('examsViewSection')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-award w-6 text-slate-300"></i> Exams & Marks</a>
+                    <a href="#" onclick="showSection('timetableStudentSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-book-reader w-6 text-slate-300"></i> Study Timetable</a>
+                    <a href="#" onclick="showSection('assignedClassesViewSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-video w-6 text-slate-300"></i> My Classes</a>
+                    <a href="#" onclick="showSection('examsViewSection')" class="nav-link flex items-center px-4 py-2.5 rounded-lg hover:bg-white/5 transition text-slate-200 text-sm"><i class="fas fa-award w-6 text-slate-300"></i> Exams & Marks</a>
                 </div>
             </nav>
             <div class="p-4 border-t border-slate-600/50">
@@ -163,47 +183,60 @@
         <!-- Content Area -->
         <div class="flex-1 flex flex-col bg-slate-50 overflow-y-auto relative w-full h-full">
             <header class="bg-white shadow-sm p-4 flex justify-between items-center border-b border-gray-200 sticky top-0 z-20 no-print shrink-0">
-                <h2 id="pageTitle" class="text-xl font-bold text-slate-700">Overview</h2>
-                <div class="flex items-center space-x-6">
+                <div class="flex items-center">
+                    <button id="mobileMenuBtn" class="md:hidden mr-4 text-slate-500 hover:text-slate-700 focus:outline-none p-1">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                    <h2 id="pageTitle" class="text-xl font-bold text-slate-700 hidden sm:block">Overview</h2>
+                </div>
+                <div class="flex items-center space-x-4 md:space-x-6">
                     <button onclick="showSection('notificationsSection')" class="relative text-slate-400 hover:text-slate-600 transition">
                         <i class="fas fa-bell text-xl"></i>
                     </button>
-                    <div class="flex items-center space-x-3 py-1 px-3">
-                        <div class="text-right">
+                    <div class="flex items-center space-x-3 py-1 md:px-3">
+                        <div class="text-right hidden sm:block">
                             <p id="currentUserDisplay" class="text-sm font-bold text-slate-700">User</p>
                             <p id="currentUserRole" class="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Role</p>
                         </div>
-                        <img id="headerUserImage" src="" class="hidden h-10 w-10 rounded-full object-cover shadow border-2 border-slate-200">
-                        <div id="headerUserIcon" class="h-9 w-9 rounded-md gradient-btn flex items-center justify-center font-bold shadow-sm">
+                        <img id="headerUserImage" src="" class="hidden h-9 w-9 md:h-10 md:w-10 rounded-full object-cover shadow border-2 border-slate-200">
+                        <div id="headerUserIcon" class="h-8 w-8 md:h-9 md:w-9 rounded-md gradient-btn flex items-center justify-center font-bold shadow-sm">
                             <i class="fas fa-user text-sm"></i>
                         </div>
                     </div>
                 </div>
             </header>
 
-            <main class="p-6 md:p-8 print-area relative flex-1">
+            <main class="p-4 md:p-8 print-area relative flex-1">
                 
-                <div id="welcomeSection" class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden no-print">
+                <!-- Welcome Section with Quick Access Shortcuts -->
+                <div id="welcomeSection" class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden no-print">
                     <div class="absolute top-0 right-0 w-64 h-64 bg-slate-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 -mr-20 -mt-20"></div>
-                    <h3 class="text-2xl font-bold mb-2 text-slate-700 relative z-10">Welcome to Delta Academy</h3>
-                    <p class="text-slate-500 relative z-10">Select an option from the sidebar to manage your activities.</p>
+                    <div class="relative z-10">
+                        <h3 class="text-xl md:text-2xl font-bold mb-2 text-slate-700">Welcome to Delta Academy</h3>
+                        <p class="text-sm md:text-base text-slate-500 mb-8">Select an option from the menu to manage your activities.</p>
+                        
+                        <!-- Quick Access Shortcuts Grid -->
+                        <div id="quickAccessGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-6">
+                            <!-- Populated dynamically via Javascript based on user role -->
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Admin: Layout Settings -->
                 <div id="layoutSection" class="hidden no-print space-y-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-emerald-500">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border-t-4 border-emerald-500">
                         <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-image mr-2 text-emerald-500"></i> Login Background Settings</h3>
                         <p class="text-xs text-slate-500 mb-4">Upload a new background image for the login screen. It will be stored in your Google Drive securely.</p>
                         <form id="layoutForm" class="space-y-4">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-2">Upload New Background Image</label>
-                                <div class="flex items-center space-x-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                                     <img id="currentBgPreview" src="" class="hidden h-20 w-32 object-cover rounded shadow border border-slate-200">
-                                    <input type="file" id="bg_photo" accept="image/*" required class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                                    <input type="file" id="bg_photo" accept="image/*" required class="text-sm w-full text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
                                 </div>
                             </div>
                             <div class="flex justify-end pt-4 border-t">
-                                <button type="submit" id="saveLayoutBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded font-bold shadow text-sm"><i class="fas fa-save mr-1"></i> Update Background</button>
+                                <button type="submit" id="saveLayoutBtn" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded font-bold shadow text-sm"><i class="fas fa-save mr-1"></i> Update Background</button>
                             </div>
                         </form>
                     </div>
@@ -211,15 +244,15 @@
 
                 <!-- Notifications Section -->
                 <div id="notificationsSection" class="hidden no-print space-y-6">
-                    <div id="createNotificationDiv" class="hidden bg-white p-6 rounded-xl shadow-sm border-t-4 border-yellow-500">
+                    <div id="createNotificationDiv" class="hidden bg-white p-4 md:p-6 rounded-xl shadow-sm border-t-4 border-yellow-500">
                         <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-bullhorn text-yellow-500 mr-2"></i> Send Notification</h3>
                         <form id="notificationForm" class="space-y-4">
                             <div><input type="text" id="n_title" placeholder="Notification Title (e.g. Holiday Alert)" required class="w-full border border-slate-300 p-2 rounded outline-none focus:ring-2 focus:ring-yellow-400 text-sm"></div>
                             <div><textarea id="n_message" rows="3" placeholder="Type your message here..." required class="w-full border border-slate-300 p-2 rounded outline-none focus:ring-2 focus:ring-yellow-400 text-sm"></textarea></div>
-                            <div class="flex justify-end"><button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded font-bold shadow-sm text-sm"><i class="fas fa-paper-plane mr-2"></i> Publish</button></div>
+                            <div class="flex justify-end"><button type="submit" class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded font-bold shadow-sm text-sm"><i class="fas fa-paper-plane mr-2"></i> Publish</button></div>
                         </form>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-bold mb-4 text-slate-700">Notice Board</h3>
                         <div id="notificationsList" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2"></div>
                     </div>
@@ -227,10 +260,10 @@
 
                 <!-- Admin: Manage Users -->
                 <div id="manageUsersSection" class="hidden space-y-6 no-print">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-slate-500 relative">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border-l-4 border-slate-500 relative">
                         <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-user-plus mr-2 text-slate-500"></i> Add Single User</h3>
                         <form id="singleUserForm" class="space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-start">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-start">
                                 <div><label class="block text-xs font-semibold text-slate-600 mb-1">Full Name</label><input type="text" id="s_name" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-slate-400 outline-none text-sm"></div>
                                 <div><label class="block text-xs font-semibold text-slate-600 mb-1">Username</label><input type="text" id="s_username" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-slate-400 outline-none text-sm"></div>
                                 <div><label class="block text-xs font-semibold text-slate-600 mb-1">Password</label><input type="text" id="s_password" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-slate-400 outline-none text-sm"></div>
@@ -247,7 +280,7 @@
                             </div>
                             
                             <div id="addTeacherFieldsContainer" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded border border-slate-200 mt-2">
-                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Teacher Photo</label><input type="file" id="s_photo" accept="image/*" class="text-sm text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-slate-200 hover:file:bg-slate-300 cursor-pointer"></div>
+                                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Teacher Photo</label><input type="file" id="s_photo" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-slate-200 hover:file:bg-slate-300 cursor-pointer"></div>
                                 <div><label class="block text-xs font-semibold text-slate-600 mb-1">Subject</label><input type="text" id="s_subject" placeholder="e.g. Mathematics" class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-slate-400 outline-none text-sm"></div>
                             </div>
                             <div id="addInstitutionFieldsContainer" class="hidden grid grid-cols-1 gap-4 bg-slate-50 p-4 rounded border border-slate-200 mt-2">
@@ -258,31 +291,31 @@
                             </div>
 
                             <div class="flex justify-end border-t pt-4">
-                                <button type="submit" id="addSingleUserBtn" class="gradient-btn px-6 py-2 rounded-md font-bold shadow-sm text-sm"><i class="fas fa-save mr-1"></i> Add User</button>
+                                <button type="submit" id="addSingleUserBtn" class="w-full sm:w-auto gradient-btn px-6 py-2 rounded-md font-bold shadow-sm text-sm"><i class="fas fa-save mr-1"></i> Add User</button>
                             </div>
                         </form>
                     </div>
 
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-slate-400">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border-l-4 border-slate-400">
                         <h3 class="text-lg font-bold mb-4 text-slate-700 flex items-center"><i class="fas fa-file-csv mr-2 text-slate-500"></i> Bulk Import Users (CSV)</h3>
-                        <div class="flex flex-wrap items-center gap-4 bg-slate-50 p-4 rounded-md border border-slate-200">
-                            <button onclick="downloadCSVTemplate()" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 shadow-sm font-medium transition text-sm"><i class="fas fa-download mr-2 text-slate-500"></i> Download Template</button>
-                            <div class="flex-1 min-w-[200px]">
+                        <div class="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4 bg-slate-50 p-4 rounded-md border border-slate-200">
+                            <button onclick="downloadCSVTemplate()" class="w-full sm:w-auto px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-md hover:bg-slate-100 shadow-sm font-medium transition text-sm"><i class="fas fa-download mr-2 text-slate-500"></i> Template</button>
+                            <div class="flex-1 w-full sm:w-auto min-w-[200px]">
                                 <input type="file" id="csvFileInput" accept=".csv" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300 cursor-pointer">
                             </div>
-                            <button id="uploadCsvBtn" class="px-6 py-2 gradient-btn rounded-md shadow-sm font-bold transition text-sm"><i class="fas fa-upload mr-2"></i> Upload</button>
+                            <button id="uploadCsvBtn" class="w-full sm:w-auto px-6 py-2 gradient-btn rounded-md shadow-sm font-bold transition text-sm"><i class="fas fa-upload mr-2"></i> Upload</button>
                         </div>
-                        <p class="text-xs text-slate-500 mt-3"><i class="fas fa-info-circle text-slate-400"></i> Column Format required: <b>username, password, role, name, phone, extra_info</b> <br> <span class="pl-4 text-[10px]">(extra_info = 'Subject' for teachers, 'Institution Username' for students)</span></p>
+                        <p class="text-xs text-slate-500 mt-3"><i class="fas fa-info-circle text-slate-400"></i> Format: <b>username, password, role, name, phone, extra_info</b></p>
                     </div>
 
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <div class="flex justify-between items-center mb-4">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-3 sm:space-y-0">
                             <h3 class="text-lg font-bold text-slate-700">Registered Directory</h3>
-                            <button id="bulkDeleteBtn" onclick="deleteSelectedUsers()" class="hidden bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-bold shadow-sm transition items-center">
+                            <button id="bulkDeleteBtn" onclick="deleteSelectedUsers()" class="hidden w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-bold shadow-sm transition items-center justify-center">
                                 <i class="fas fa-trash-alt mr-2"></i> Delete Selected
                             </button>
                         </div>
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-auto w-full">
                             <table class="min-w-full text-left text-sm whitespace-nowrap">
                                 <thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]">
                                     <tr>
@@ -301,19 +334,19 @@
 
                 <!-- EDIT USER MODAL -->
                 <div id="editUserModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-[95%] md:max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
                         <div class="p-4 border-b bg-slate-50 flex justify-between items-center shrink-0">
                             <h3 class="font-bold text-slate-700 text-lg"><i class="fas fa-user-edit mr-2"></i> Edit User Details</h3>
                             <button onclick="closeEditModal()" class="text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
                         </div>
-                        <div class="p-6 overflow-y-auto">
+                        <div class="p-4 md:p-6 overflow-y-auto">
                             <form id="editUserForm" class="space-y-4">
                                 <input type="hidden" id="e_id">
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div><label class="block text-xs font-semibold text-slate-600 mb-1">Full Name</label><input type="text" id="e_name" required class="w-full border p-2 rounded text-sm"></div>
                                     <div><label class="block text-xs font-semibold text-slate-600 mb-1">Phone Number</label><input type="tel" id="e_phone" required class="w-full border p-2 rounded text-sm"></div>
                                 </div>
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div><label class="block text-xs font-semibold text-slate-600 mb-1">Username</label><input type="text" id="e_username" required class="w-full border p-2 rounded text-sm"></div>
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-600 mb-1">Role</label>
@@ -326,7 +359,7 @@
                                 <div id="editTeacherFieldsContainer" class="hidden bg-slate-50 p-4 rounded border space-y-3">
                                     <div><label class="block text-xs font-semibold text-slate-600 mb-1">Subject</label><input type="text" id="e_subject" class="w-full border p-2 rounded text-sm outline-none"></div>
                                     <div><label class="block text-xs font-semibold text-slate-600 mb-2">Update Photo</label>
-                                        <div class="flex items-center space-x-4"><img id="e_currentPhoto" src="" class="hidden h-12 w-12 rounded object-cover shadow border"><input type="file" id="e_photo" accept="image/*" class="text-xs file:bg-white file:border file:rounded cursor-pointer"></div>
+                                        <div class="flex items-center space-x-4"><img id="e_currentPhoto" src="" class="hidden h-12 w-12 rounded object-cover shadow border"><input type="file" id="e_photo" accept="image/*" class="w-full text-xs file:bg-white file:border file:rounded cursor-pointer"></div>
                                     </div>
                                 </div>
                                 <div id="editInstitutionFieldsContainer" class="hidden bg-slate-50 p-4 rounded border space-y-3">
@@ -348,7 +381,7 @@
                                     <textarea id="e_blockReason" rows="2" class="w-full border border-red-300 p-2 rounded text-sm bg-red-50"></textarea>
                                 </div>
                                 <div class="flex justify-end pt-2">
-                                    <button type="submit" id="editUpdateBtn" class="gradient-btn px-6 py-2 rounded font-bold shadow text-sm">Update Details</button>
+                                    <button type="submit" id="editUpdateBtn" class="w-full sm:w-auto gradient-btn px-6 py-2 rounded font-bold shadow text-sm">Update Details</button>
                                 </div>
                             </form>
                         </div>
@@ -356,41 +389,41 @@
                 </div>
 
                 <div id="passwordManagerSection" class="hidden no-print">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-key mr-2 text-slate-500"></i> Password Manager</h3>
-                        <div class="overflow-x-auto"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Name</th><th class="p-3">Username</th><th class="p-3">Role</th><th class="p-3">Current Password</th><th class="p-3">Action</th></tr></thead><tbody id="passwordTableBody" class="divide-y divide-slate-100"></tbody></table></div>
+                        <div class="overflow-x-auto w-full"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Name</th><th class="p-3">Username</th><th class="p-3">Role</th><th class="p-3">Current Password</th><th class="p-3">Action</th></tr></thead><tbody id="passwordTableBody" class="divide-y divide-slate-100"></tbody></table></div>
                     </div>
                 </div>
 
                 <!-- Admin: Timetable Setup -->
                 <div id="timetableAdminSection" class="hidden no-print space-y-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-blue-500">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border-t-4 border-blue-500">
                         <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-calendar-plus mr-2 text-blue-500"></i> Publish Daily Timetable</h3>
-                        <form id="timetableForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <form id="timetableForm" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
                             <div><label class="block text-xs font-semibold text-slate-600 mb-1">Date</label><input type="date" id="tt_date" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-400 outline-none text-sm"></div>
                             <div><label class="block text-xs font-semibold text-slate-600 mb-1">Subject</label><input type="text" id="tt_subject" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-400 outline-none text-sm"></div>
-                            <div><label class="block text-xs font-semibold text-slate-600 mb-1">Portions / Topics</label><input type="text" id="tt_topic" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-400 outline-none text-sm"></div>
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold shadow-sm text-sm"><i class="fas fa-plus mr-1"></i> Publish</button>
+                            <div class="sm:col-span-2 md:col-span-1"><label class="block text-xs font-semibold text-slate-600 mb-1">Portions / Topics</label><input type="text" id="tt_topic" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-blue-400 outline-none text-sm"></div>
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold shadow-sm text-sm"><i class="fas fa-plus mr-1"></i> Publish</button>
                         </form>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-md font-bold mb-4 text-slate-700">Recent Timetables</h3>
-                        <div class="overflow-x-auto"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Date</th><th class="p-3">Subject</th><th class="p-3">Topics</th><th class="p-3">Action</th></tr></thead><tbody id="ttAdminTableBody" class="divide-y divide-slate-100"></tbody></table></div>
+                        <div class="overflow-x-auto w-full"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Date</th><th class="p-3">Subject</th><th class="p-3">Topics</th><th class="p-3">Action</th></tr></thead><tbody id="ttAdminTableBody" class="divide-y divide-slate-100"></tbody></table></div>
                     </div>
                 </div>
 
                 <!-- Student: View Timetable -->
                 <div id="timetableStudentSection" class="hidden no-print space-y-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center mb-6">
-                        <h2 class="text-2xl font-black text-slate-700"><i class="fas fa-book-reader text-blue-500 mr-2"></i> Study Plan</h2>
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 text-center mb-6">
+                        <h2 class="text-xl md:text-2xl font-black text-slate-700"><i class="fas fa-book-reader text-blue-500 mr-2"></i> Study Plan</h2>
                         <p class="text-xs text-slate-500 mt-1">Focus on today's goals and review yesterday's portions.</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5 shadow-sm">
+                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 md:p-5 shadow-sm">
                             <h3 class="font-bold text-blue-800 uppercase tracking-wide border-b border-blue-200 pb-2 mb-3"><i class="fas fa-calendar-day mr-2"></i> Today's Schedule</h3>
                             <div id="studentTtToday" class="space-y-3"></div>
                         </div>
-                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 shadow-sm opacity-90">
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 md:p-5 shadow-sm opacity-90">
                             <h3 class="font-bold text-slate-600 uppercase tracking-wide border-b border-slate-300 pb-2 mb-3"><i class="fas fa-history mr-2"></i> Yesterday's Review</h3>
                             <div id="studentTtYesterday" class="space-y-3"></div>
                         </div>
@@ -399,143 +432,152 @@
 
                 <!-- Admin: Assign Classes -->
                 <div id="assignClassesSection" class="hidden no-print space-y-6">
-                    <div class="bg-white p-8 rounded-xl shadow-sm border-t-4 border-slate-500">
+                    <div class="bg-white p-4 md:p-8 rounded-xl shadow-sm border-t-4 border-slate-500">
                         <h3 class="text-xl font-bold mb-6 text-slate-700"><i class="fas fa-chalkboard-teacher mr-2 text-slate-500"></i> Assign New Class</h3>
                         <form id="assignClassForm" class="space-y-5">
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                                 <div><label class="text-xs font-semibold text-slate-600">Institution</label><select id="assignInstitution" required class="w-full border p-2 rounded bg-slate-50 text-sm"></select></div>
                                 <div><label class="text-xs font-semibold text-slate-600">Teacher</label><select id="assignTeacher" required class="w-full border p-2 rounded bg-slate-50 text-sm"></select></div>
                                 <div><label class="text-xs font-semibold text-slate-600">Date</label><input type="date" id="assignDate" required class="w-full border p-2 rounded text-sm"></div>
                                 <div><label class="text-xs font-semibold text-slate-600">Time</label><input type="time" id="assignTime" required class="w-full border p-2 rounded text-sm"></div>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
                                 <div><label class="text-xs font-semibold text-slate-600">Subject</label><input type="text" id="assignSubject" required class="w-full border p-2 rounded text-sm"></div>
                                 <div><label class="text-xs font-semibold text-slate-600">Portions</label><input type="text" id="assignPortion" required class="w-full border p-2 rounded text-sm"></div>
                                 <div><label class="text-xs font-semibold text-slate-600">Mode</label><select id="assignMode" class="w-full border p-2 rounded bg-slate-50 text-sm"><option value="Offline">Offline</option><option value="Online">Online</option></select></div>
                                 <div id="meetLinkDiv" class="hidden"><label class="text-xs font-semibold text-slate-600">Link</label><input type="text" id="meetLink" class="w-full border p-2 rounded text-sm"></div>
-                                <div><button type="submit" class="w-full gradient-btn font-bold p-2 rounded shadow text-sm"><i class="fas fa-paper-plane mr-1"></i> Assign</button></div>
+                                <div class="sm:col-span-2 md:col-span-1"><button type="submit" class="w-full gradient-btn font-bold p-2 rounded shadow text-sm"><i class="fas fa-paper-plane mr-1"></i> Assign</button></div>
                             </div>
                         </form>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-lg font-bold mb-4 text-slate-700">Assigned Classes</h3>
-                        <div class="overflow-x-auto"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Date/Time</th><th class="p-3">Institution</th><th class="p-3">Teacher</th><th class="p-3">Sub/Portion</th><th class="p-3">Mode</th><th class="p-3">Action</th></tr></thead><tbody id="adminClassesTableBody"></tbody></table></div>
+                        <div class="overflow-x-auto w-full"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Date/Time</th><th class="p-3">Institution</th><th class="p-3">Teacher</th><th class="p-3">Sub/Portion</th><th class="p-3">Mode</th><th class="p-3">Action</th></tr></thead><tbody id="adminClassesTableBody"></tbody></table></div>
                     </div>
                 </div>
 
                 <!-- Shared: View Assigned Classes -->
                 <div id="assignedClassesViewSection" class="hidden no-print space-y-6">
-                    <div class="bg-white p-4 rounded-xl shadow-sm border flex justify-between items-center"><h3 class="font-bold text-slate-700"><i class="fas fa-calendar-alt mr-2"></i> My Assigned Classes</h3><div><input type="date" id="searchClassDate" onchange="loadUserAssignedClasses()" class="border p-1 rounded text-sm outline-none"></div></div>
-                    <div class="bg-indigo-50 p-6 rounded-xl shadow-sm border border-indigo-100"><h4 class="font-bold text-indigo-800 mb-4 text-sm uppercase">Today's Classes</h4><div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="todayClassesContainer"></div></div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border"><h4 class="font-bold text-slate-700 mb-4 text-sm uppercase" id="otherClassesTitle">Upcoming</h4><div class="overflow-x-auto"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 font-bold text-[10px] uppercase"><tr><th class="p-3">Date/Time</th><th id="userViewTargetHeader" class="p-3">Target</th><th class="p-3">Subject</th><th class="p-3">Portion</th><th class="p-3">Mode / Action</th></tr></thead><tbody id="userClassesTableBody"></tbody></table></div></div>
+                    <div class="bg-white p-4 rounded-xl shadow-sm border flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+                        <h3 class="font-bold text-slate-700"><i class="fas fa-calendar-alt mr-2"></i> My Assigned Classes</h3>
+                        <div class="w-full sm:w-auto"><input type="date" id="searchClassDate" onchange="loadUserAssignedClasses()" class="w-full sm:w-auto border p-2 rounded text-sm outline-none"></div>
+                    </div>
+                    <div class="bg-indigo-50 p-4 md:p-6 rounded-xl shadow-sm border border-indigo-100">
+                        <h4 class="font-bold text-indigo-800 mb-4 text-sm uppercase">Today's Classes</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="todayClassesContainer"></div>
+                    </div>
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border">
+                        <h4 class="font-bold text-slate-700 mb-4 text-sm uppercase" id="otherClassesTitle">Upcoming</h4>
+                        <div class="overflow-x-auto w-full"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 font-bold text-[10px] uppercase"><tr><th class="p-3">Date/Time</th><th id="userViewTargetHeader" class="p-3">Target</th><th class="p-3">Subject</th><th class="p-3">Portion</th><th class="p-3">Mode / Action</th></tr></thead><tbody id="userClassesTableBody"></tbody></table></div>
+                    </div>
                 </div>
 
                 <!-- Admin: Manage Exams -->
                 <div id="examsAdminSection" class="hidden no-print space-y-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-indigo-500">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border-t-4 border-indigo-500">
                         <h3 class="text-lg font-bold mb-4 text-slate-700"><i class="fas fa-file-signature mr-2 text-indigo-500"></i> Assign Exam</h3>
                         <form id="assignExamForm" class="space-y-4">
                             <input type="hidden" id="ex_id">
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <div class="col-span-2"><label class="block text-xs font-semibold text-slate-600 mb-1">Exam Title</label><input type="text" id="ex_title" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="sm:col-span-2"><label class="block text-xs font-semibold text-slate-600 mb-1">Exam Title</label><input type="text" id="ex_title" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></div>
                                 <div><label class="block text-xs font-semibold text-slate-600 mb-1">Date</label><input type="date" id="ex_date" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></div>
                                 <div><label class="block text-xs font-semibold text-slate-600 mb-1">Institution</label><select id="ex_inst" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></select></div>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
                                 <div><label class="block text-xs font-semibold text-slate-600 mb-1">Mode</label><select id="ex_mode" class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"><option value="Offline">Offline</option><option value="Online">Online</option></select></div>
                                 <div><label class="block text-xs font-semibold text-slate-600 mb-1">Max Marks</label><input type="number" id="ex_max" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></div>
                                 <div><label class="block text-xs font-semibold text-slate-600 mb-1">Pass Marks</label><input type="number" id="ex_pass" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></div>
                                 <div><label class="block text-xs font-semibold text-slate-600 mb-1">Exam Link (if online)</label><input type="text" id="ex_link" class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-indigo-400 outline-none text-sm"></div>
-                                <button type="submit" id="ex_submitBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded font-bold shadow-sm text-sm"><i class="fas fa-save mr-1"></i> Save Exam</button>
+                                <button type="submit" id="ex_submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded font-bold shadow-sm text-sm"><i class="fas fa-save mr-1"></i> Save Exam</button>
                             </div>
                         </form>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="text-md font-bold mb-4 text-slate-700">Exam Roster</h3>
-                        <div class="overflow-x-auto"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Exam Details</th><th class="p-3">Target</th><th class="p-3">Marks Info</th><th class="p-3">Status</th><th class="p-3 text-right">Actions</th></tr></thead><tbody id="examsAdminTableBody" class="divide-y divide-slate-100"></tbody></table></div>
+                        <div class="overflow-x-auto w-full"><table class="min-w-full text-left text-sm whitespace-nowrap"><thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Exam Details</th><th class="p-3">Target</th><th class="p-3">Marks Info</th><th class="p-3">Status</th><th class="p-3 text-right">Actions</th></tr></thead><tbody id="examsAdminTableBody" class="divide-y divide-slate-100"></tbody></table></div>
                     </div>
                 </div>
 
                 <!-- Mark Entry Modal -->
                 <div id="markEntryModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-[95%] md:max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
                         <div class="p-4 border-b bg-indigo-50 flex justify-between items-center shrink-0">
                             <h3 class="font-bold text-indigo-800 text-lg" id="markEntryTitle"><i class="fas fa-edit mr-2"></i> Enter Marks</h3>
                             <button onclick="closeMarkModal()" class="text-indigo-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
                         </div>
-                        <div class="p-6 overflow-y-auto bg-slate-50">
+                        <div class="p-4 md:p-6 overflow-y-auto bg-slate-50 flex-1">
                             <input type="hidden" id="me_examId">
                             <input type="hidden" id="me_max">
-                            <div class="overflow-x-auto border border-slate-200 rounded-lg bg-white">
+                            <div class="overflow-x-auto border border-slate-200 rounded-lg bg-white w-full">
                                 <table class="min-w-full text-left text-sm">
-                                    <thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Student Name</th><th class="p-3">Username</th><th class="p-3 w-32">Marks Obtained</th></tr></thead>
+                                    <thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px]"><tr><th class="p-3">Student Name</th><th class="p-3 hidden sm:table-cell">Username</th><th class="p-3 w-32">Marks Obtained</th></tr></thead>
                                     <tbody id="markEntryTableBody" class="divide-y divide-slate-100"></tbody>
                                 </table>
                             </div>
-                            <div class="flex justify-end mt-4"><button onclick="saveMarks()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-bold shadow text-sm">Save All Marks</button></div>
+                            <div class="flex justify-end mt-4"><button onclick="saveMarks()" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-bold shadow text-sm">Save All Marks</button></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Shared: View Exams & Marks -->
                 <div id="examsViewSection" class="hidden space-y-6">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                        <div class="no-print flex justify-between items-end mb-4 border-b pb-2">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="no-print flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 border-b pb-2 space-y-3 sm:space-y-0">
                             <h3 class="text-xl font-bold text-slate-700"><i class="fas fa-award mr-2 text-indigo-500"></i> Exams & Report Card</h3>
-                            <button onclick="window.print()" class="gradient-btn px-4 py-1.5 rounded shadow text-sm font-bold"><i class="fas fa-print mr-1"></i> Print</button>
+                            <button onclick="window.print()" class="w-full sm:w-auto gradient-btn px-4 py-1.5 rounded shadow text-sm font-bold"><i class="fas fa-print mr-1"></i> Print</button>
                         </div>
                         <div class="print-area">
                             <div class="hidden print-header text-center mb-4"><h2 class="text-2xl font-bold">DELTA ACADEMY - Report Card</h2><p id="printReportUser" class="text-sm font-bold mt-1"></p></div>
-                            <div class="overflow-x-auto"><table class="min-w-full text-left text-sm border-collapse border border-slate-300"><thead class="bg-slate-100 text-slate-700 uppercase font-bold text-[10px]"><tr><th class="border border-slate-300 p-3">Date</th><th class="border border-slate-300 p-3">Exam Title</th><th class="border border-slate-300 p-3" id="examViewUserCol">Student</th><th class="border border-slate-300 p-3 text-center">Max Marks</th><th class="border border-slate-300 p-3 text-center">Marks Obtained</th><th class="border border-slate-300 p-3 text-center">Status</th></tr></thead><tbody id="examsViewTableBody"></tbody></table></div>
+                            <div class="overflow-x-auto w-full"><table class="min-w-full text-left text-sm border-collapse border border-slate-300"><thead class="bg-slate-100 text-slate-700 uppercase font-bold text-[10px]"><tr><th class="border border-slate-300 p-3">Date</th><th class="border border-slate-300 p-3">Exam Title</th><th class="border border-slate-300 p-3" id="examViewUserCol">Student</th><th class="border border-slate-300 p-3 text-center">Max Marks</th><th class="border border-slate-300 p-3 text-center">Marks Obtained</th><th class="border border-slate-300 p-3 text-center">Status</th></tr></thead><tbody id="examsViewTableBody"></tbody></table></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Doubt Forum -->
                 <div id="doubtsSection" class="hidden no-print space-y-6 flex flex-col h-full">
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center shrink-0">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center shrink-0 space-y-3 sm:space-y-0">
                         <div>
                             <h3 class="text-lg font-bold text-slate-700"><i class="fas fa-comments mr-2 text-purple-500"></i> Doubt Clearance Forum</h3>
                             <p class="text-[10px] text-slate-500 uppercase tracking-wide">Ask questions, get answers.</p>
                         </div>
-                        <button onclick="document.getElementById('askDoubtModal').classList.remove('hidden')" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-bold shadow-sm text-sm transition"><i class="fas fa-plus mr-1"></i> Ask Doubt</button>
+                        <button onclick="document.getElementById('askDoubtModal').classList.remove('hidden')" class="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-bold shadow-sm text-sm transition"><i class="fas fa-plus mr-1"></i> Ask Doubt</button>
                     </div>
 
-                    <div class="flex-1 overflow-y-auto bg-slate-100 rounded-xl p-4 border border-slate-200 shadow-inner" id="doubtsListContainer">
+                    <div class="flex-1 overflow-y-auto bg-slate-100 rounded-xl p-2 md:p-4 border border-slate-200 shadow-inner" id="doubtsListContainer">
                         <!-- Doubts rendered here -->
                     </div>
                 </div>
 
                 <!-- Ask Doubt Modal -->
                 <div id="askDoubtModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-[95%] md:max-w-md overflow-hidden">
                         <div class="p-4 border-b bg-purple-50 flex justify-between items-center">
                             <h3 class="font-bold text-purple-800 text-lg"><i class="fas fa-question-circle mr-2"></i> Submit a Doubt</h3>
                             <button onclick="document.getElementById('askDoubtModal').classList.add('hidden')" class="text-purple-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
                         </div>
-                        <form id="askDoubtForm" class="p-6 space-y-4">
+                        <form id="askDoubtForm" class="p-4 md:p-6 space-y-4">
                             <div><label class="block text-xs font-semibold text-slate-600 mb-1">Subject</label><input type="text" id="d_subject" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-purple-400 outline-none text-sm"></div>
                             <div><label class="block text-xs font-semibold text-slate-600 mb-1">Chapter / Topic</label><input type="text" id="d_chapter" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-purple-400 outline-none text-sm"></div>
                             <div><label class="block text-xs font-semibold text-slate-600 mb-1">Your Question</label><textarea id="d_question" rows="4" required class="w-full border border-slate-300 p-2 rounded focus:ring-2 focus:ring-purple-400 outline-none text-sm"></textarea></div>
-                            <div class="flex justify-end pt-2"><button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded font-bold shadow text-sm">Submit Doubt</button></div>
+                            <div class="flex justify-end pt-2"><button type="submit" class="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded font-bold shadow text-sm">Submit Doubt</button></div>
                         </form>
                     </div>
                 </div>
 
                 <!-- View/Reply Doubt Modal -->
                 <div id="viewDoubtModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-[95%] md:max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
                         <div class="p-4 border-b bg-slate-50 flex justify-between items-center shrink-0">
                             <h3 class="font-bold text-slate-800 text-lg">Discussion Thread</h3>
                             <button onclick="document.getElementById('viewDoubtModal').classList.add('hidden')" class="text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
                         </div>
-                        <div class="p-6 overflow-y-auto bg-slate-50 flex-1" id="doubtThreadContent">
+                        <div class="p-4 md:p-6 overflow-y-auto bg-slate-50 flex-1" id="doubtThreadContent">
                             <!-- Thread loaded here -->
                         </div>
-                        <div class="p-4 border-t bg-white shrink-0">
+                        <div class="p-3 md:p-4 border-t bg-white shrink-0">
                             <form id="replyDoubtForm" class="flex space-x-2">
                                 <input type="hidden" id="r_doubtId">
-                                <input type="text" id="r_text" placeholder="Type your reply or paste a link..." required class="flex-1 border border-slate-300 p-2 rounded outline-none focus:ring-2 focus:ring-purple-400 text-sm">
+                                <input type="text" id="r_text" placeholder="Type your reply..." required class="flex-1 w-full border border-slate-300 p-2 rounded outline-none focus:ring-2 focus:ring-purple-400 text-sm">
                                 <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded font-bold shadow text-sm"><i class="fas fa-paper-plane"></i></button>
                             </form>
                         </div>
@@ -544,11 +586,11 @@
 
                 <!-- Admin & Teacher Activity Reports -->
                 <div id="activityAdminSection" class="hidden">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border"><div class="no-print flex justify-between mb-4"><h3 class="font-bold text-slate-700">Teachers Activity</h3><button onclick="window.print()" class="gradient-btn px-4 py-1 rounded text-sm">Print</button></div><div class="no-print grid grid-cols-3 gap-4 mb-4 bg-slate-50 p-4 rounded"><div><label class="text-xs font-bold">Teachers</label><div id="activityTeacherList" class="h-24 overflow-y-auto border bg-white p-2 text-sm space-y-1"></div></div><div><label class="text-xs font-bold">From</label><input type="date" id="filterStartDate" class="w-full border p-2 rounded text-sm"></div><div><label class="text-xs font-bold">To</label><input type="date" id="filterEndDate" class="w-full border p-2 rounded text-sm"></div><div class="col-span-3 flex justify-end"><button onclick="loadAdminActivityReport()" class="bg-slate-700 text-white px-4 py-2 rounded text-sm font-bold">Generate</button></div></div><div class="print-area"><div class="hidden print-header text-center mb-4"><h2 class="text-2xl font-bold">DELTA ACADEMY</h2><p>Activity Report</p></div><table class="min-w-full text-left text-sm border-collapse border"><thead class="bg-slate-100 font-bold text-xs uppercase"><tr><th class="border p-2">Date</th><th class="border p-2">Teacher</th><th class="border p-2">Institution</th><th class="border p-2">Subject</th><th class="border p-2">Mode</th></tr></thead><tbody id="adminActivityTableBody"></tbody></table></div></div>
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border"><div class="no-print flex flex-col sm:flex-row justify-between mb-4"><h3 class="font-bold text-slate-700 mb-2 sm:mb-0">Teachers Activity</h3><button onclick="window.print()" class="w-full sm:w-auto gradient-btn px-4 py-1 rounded text-sm">Print</button></div><div class="no-print grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4 bg-slate-50 p-4 rounded"><div class="sm:col-span-3 md:col-span-1"><label class="text-xs font-bold">Teachers</label><div id="activityTeacherList" class="h-24 overflow-y-auto border bg-white p-2 text-sm space-y-1"></div></div><div><label class="text-xs font-bold">From</label><input type="date" id="filterStartDate" class="w-full border p-2 rounded text-sm"></div><div><label class="text-xs font-bold">To</label><input type="date" id="filterEndDate" class="w-full border p-2 rounded text-sm"></div><div class="col-span-1 sm:col-span-3 flex justify-end"><button onclick="loadAdminActivityReport()" class="w-full sm:w-auto bg-slate-700 text-white px-4 py-2 rounded text-sm font-bold">Generate</button></div></div><div class="print-area overflow-x-auto w-full"><div class="hidden print-header text-center mb-4"><h2 class="text-2xl font-bold">DELTA ACADEMY</h2><p>Activity Report</p></div><table class="min-w-full text-left text-sm border-collapse border"><thead class="bg-slate-100 font-bold text-xs uppercase"><tr><th class="border p-2">Date</th><th class="border p-2">Teacher</th><th class="border p-2">Institution</th><th class="border p-2">Subject</th><th class="border p-2">Mode</th></tr></thead><tbody id="adminActivityTableBody"></tbody></table></div></div>
                 </div>
 
                 <div id="activityTeacherSection" class="hidden">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border"><div class="no-print flex justify-between mb-4"><h3 class="font-bold text-slate-700">My Activity</h3><button onclick="window.print()" class="gradient-btn px-4 py-1 rounded text-sm">Print</button></div><div class="print-area"><div class="hidden print-header text-center mb-4"><h2 class="text-2xl font-bold">DELTA ACADEMY</h2><p id="printTeacherName">Name</p></div><table class="min-w-full text-left text-sm border-collapse border"><thead class="bg-slate-100 font-bold text-xs uppercase"><tr><th class="border p-2">Date & Time</th><th class="border p-2">Institution</th><th class="border p-2">Subject</th><th class="border p-2">Portion</th><th class="border p-2">Mode</th></tr></thead><tbody id="teacherActivityTableBody"></tbody></table></div></div>
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border"><div class="no-print flex flex-col sm:flex-row justify-between mb-4"><h3 class="font-bold text-slate-700 mb-2 sm:mb-0">My Activity</h3><button onclick="window.print()" class="w-full sm:w-auto gradient-btn px-4 py-1 rounded text-sm">Print</button></div><div class="print-area overflow-x-auto w-full"><div class="hidden print-header text-center mb-4"><h2 class="text-2xl font-bold">DELTA ACADEMY</h2><p id="printTeacherName">Name</p></div><table class="min-w-full text-left text-sm border-collapse border"><thead class="bg-slate-100 font-bold text-xs uppercase"><tr><th class="border p-2">Date & Time</th><th class="border p-2">Institution</th><th class="border p-2">Subject</th><th class="border p-2">Portion</th><th class="border p-2">Mode</th></tr></thead><tbody id="teacherActivityTableBody"></tbody></table></div></div>
                 </div>
 
             </main>
@@ -570,6 +612,51 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         let currentUser = null;
+
+        // Hide the initial loader once javascript is ready
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('initialLoader');
+            if(loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }
+        });
+
+        // Mobile Sidebar Toggle Logic
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            sidebar.classList.remove('-translate-x-full');
+            sidebarOverlay.classList.remove('hidden');
+        });
+        
+        const closeSidebar = () => {
+            sidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        };
+        
+        document.getElementById('closeSidebarBtn').addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        // Aggressively remove Netlify badge via Javascript
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1) { 
+                        if (node.id && typeof node.id === 'string' && node.id.toLowerCase().includes('netlify')) node.remove();
+                        if (node.className && typeof node.className === 'string' && node.className.toLowerCase().includes('netlify')) node.remove();
+                        if (node.tagName === 'A' && node.href && node.href.includes('netlify.com')) node.remove();
+                        if (node.tagName === 'A' && node.href && node.href.includes('netlify.app')) node.remove();
+                    }
+                });
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+        
+        setTimeout(() => {
+            document.querySelectorAll('a[href*="netlify"], div[id*="netlify"], div[class*="netlify"], iframe[src*="netlify"]').forEach(el => el.remove());
+        }, 500);
 
         // Custom Modals Logic
         window.showAlert = (msg, title="Notice") => {
@@ -598,6 +685,8 @@
             });
             document.getElementById(sectionId).classList.remove('hidden');
             
+            if(window.innerWidth < 768) closeSidebar();
+            
             if(sectionId === 'manageUsersSection') loadUsersList();
             if(sectionId === 'passwordManagerSection') loadPasswordManager();
             if(sectionId === 'assignClassesSection') { loadAssignDropdowns(); loadAdminAssignedClasses(); }
@@ -612,17 +701,41 @@
             if(sectionId === 'doubtsSection') loadDoubts();
         };
 
+        // Image Compression function
         const fileToBase64 = (file) => new Promise((resolve, reject) => {
-            const reader = new FileReader(); reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
+            const reader = new FileReader(); 
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1000;
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.6));
+                };
+            };
+            reader.onerror = error => reject(error);
         });
 
         async function uploadToDrive(base64Data, fileName) {
-            const scriptUrl = "https://script.google.com/macros/s/AKfycbyM4X1lat27uDqO90zktqKTC06wKuusLLj4EyczbGrRpv6gqDHQjmMyaq2vHrsWhHTtmw/exec";
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbyMUNZRuBf-gSqLUTRe1bCXJEobuakMZujg2l-WtODEpeYcmkTghhMWIrUYpcQCZ4zCWA/exec"; 
             try {
-                const response = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({ base64: base64Data, name: fileName }) });
-                const result = await response.json(); return result.success ? result.url : "";
-            } catch (e) { return ""; }
+                const response = await fetch(scriptUrl, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ base64: base64Data, name: fileName }) 
+                });
+                const result = await response.json(); 
+                return result.success ? result.url : "";
+            } catch (e) { 
+                console.error("Upload Failed:", e);
+                return ""; 
+            }
         }
 
         // --- Layout Setting Logic ---
@@ -642,7 +755,7 @@
             if(preview) { preview.src = url; preview.classList.remove('hidden'); }
         }
         
-        loadInitialSettings(); // Fetch background on page load
+        loadInitialSettings(); 
 
         document.getElementById('layoutForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -684,9 +797,8 @@
             document.getElementById(mode === 'add' ? 'addStudentFieldsContainer' : 'editStudentFieldsContainer').classList.toggle('hidden', !isStudent);
 
             if(isStudent) {
-                // Populate Institution Dropdown for Student
                 const instSelect = document.getElementById(prefix + 'student_inst');
-                if(instSelect.options.length <= 1) { // Load if empty
+                if(instSelect.options.length <= 1) { 
                     instSelect.innerHTML = '<option value="">-- Select Institution --</option>';
                     const snaps = await getDocs(query(collection(db, "users"), where("role", "==", "institution")));
                     snaps.forEach(d => { instSelect.innerHTML += `<option value="${d.data().username}">${d.data().name}</option>`; });
@@ -743,14 +855,76 @@
             if(user.role === 'admin') {
                 document.getElementById('adminMenu').classList.remove('hidden'); 
                 document.getElementById('createNotificationDiv').classList.remove('hidden');
+                populateQuickAccess('admin');
                 showSection('welcomeSection');
             } else if (user.role === 'teacher') {
-                document.getElementById('teacherMenu').classList.remove('hidden'); document.getElementById('printTeacherName').innerText = user.name; document.getElementById('userViewTargetHeader').innerText = "Institution"; showSection('assignedClassesViewSection');
+                document.getElementById('teacherMenu').classList.remove('hidden'); document.getElementById('printTeacherName').innerText = user.name; document.getElementById('userViewTargetHeader').innerText = "Institution"; 
+                populateQuickAccess('teacher');
+                showSection('welcomeSection');
             } else if (user.role === 'institution') {
-                document.getElementById('institutionMenu').classList.remove('hidden'); document.getElementById('userViewTargetHeader').innerText = "Subject Teacher"; showSection('assignedClassesViewSection');
+                document.getElementById('institutionMenu').classList.remove('hidden'); document.getElementById('userViewTargetHeader').innerText = "Subject Teacher"; 
+                populateQuickAccess('institution');
+                showSection('welcomeSection');
             } else if (user.role === 'student') {
-                document.getElementById('studentMenu').classList.remove('hidden'); document.getElementById('userViewTargetHeader').innerText = "Subject Teacher"; showSection('timetableStudentSection');
+                document.getElementById('studentMenu').classList.remove('hidden'); document.getElementById('userViewTargetHeader').innerText = "Subject Teacher"; 
+                populateQuickAccess('student');
+                showSection('welcomeSection');
             }
+        }
+
+        // Generate Quick Access Grid dynamically based on user role
+        function populateQuickAccess(role) {
+            const grid = document.getElementById('quickAccessGrid');
+            grid.innerHTML = ''; // Clear previous
+
+            const commonLinks = [
+                { id: 'notificationsSection', icon: 'fa-bell', text: 'Notifications', color: 'text-yellow-500', bg: 'bg-yellow-50' },
+                { id: 'doubtsSection', icon: 'fa-comments', text: 'Doubt Forum', color: 'text-purple-500', bg: 'bg-purple-50' }
+            ];
+
+            const adminLinks = [
+                { id: 'layoutSection', icon: 'fa-image', text: 'Layout', color: 'text-emerald-500', bg: 'bg-emerald-50' },
+                { id: 'manageUsersSection', icon: 'fa-users', text: 'Users', color: 'text-slate-500', bg: 'bg-slate-100' },
+                { id: 'passwordManagerSection', icon: 'fa-key', text: 'Passwords', color: 'text-gray-500', bg: 'bg-gray-100' },
+                { id: 'timetableAdminSection', icon: 'fa-clock', text: 'Timetable', color: 'text-blue-500', bg: 'bg-blue-50' },
+                { id: 'assignClassesSection', icon: 'fa-chalkboard-teacher', text: 'Assign Classes', color: 'text-indigo-500', bg: 'bg-indigo-50' },
+                { id: 'examsAdminSection', icon: 'fa-file-alt', text: 'Exams', color: 'text-rose-500', bg: 'bg-rose-50' },
+                { id: 'activityAdminSection', icon: 'fa-chart-line', text: 'Activity', color: 'text-teal-500', bg: 'bg-teal-50' }
+            ];
+
+            const teacherLinks = [
+                { id: 'assignedClassesViewSection', icon: 'fa-calendar-check', text: 'My Classes', color: 'text-indigo-500', bg: 'bg-indigo-50' },
+                { id: 'activityTeacherSection', icon: 'fa-tasks', text: 'My Activity', color: 'text-teal-500', bg: 'bg-teal-50' }
+            ];
+
+            const institutionLinks = [
+                { id: 'assignedClassesViewSection', icon: 'fa-calendar-check', text: 'Classes', color: 'text-indigo-500', bg: 'bg-indigo-50' },
+                { id: 'examsViewSection', icon: 'fa-award', text: 'Exams & Marks', color: 'text-rose-500', bg: 'bg-rose-50' }
+            ];
+
+            const studentLinks = [
+                { id: 'timetableStudentSection', icon: 'fa-book-reader', text: 'Study Plan', color: 'text-blue-500', bg: 'bg-blue-50' },
+                { id: 'assignedClassesViewSection', icon: 'fa-video', text: 'My Classes', color: 'text-indigo-500', bg: 'bg-indigo-50' },
+                { id: 'examsViewSection', icon: 'fa-award', text: 'Exams & Marks', color: 'text-rose-500', bg: 'bg-rose-50' }
+            ];
+
+            let linksToShow = [...commonLinks];
+            
+            if (role === 'admin') linksToShow = [...linksToShow, ...adminLinks];
+            if (role === 'teacher') linksToShow = [...linksToShow, ...teacherLinks];
+            if (role === 'institution') linksToShow = [...linksToShow, ...institutionLinks];
+            if (role === 'student') linksToShow = [...linksToShow, ...studentLinks];
+
+            linksToShow.forEach(link => {
+                grid.innerHTML += `
+                    <button onclick="showSection('${link.id}')" class="flex flex-col items-center justify-center p-4 rounded-xl border border-slate-200 hover:shadow-md hover:border-slate-300 transition bg-white group">
+                        <div class="w-12 h-12 rounded-full ${link.bg} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas ${link.icon} text-xl ${link.color}"></i>
+                        </div>
+                        <span class="text-xs font-bold text-slate-600 text-center">${link.text}</span>
+                    </button>
+                `;
+            });
         }
 
         document.getElementById('logoutBtn').addEventListener('click', () => { currentUser = null; document.getElementById('mainDashboard').classList.add('hidden'); document.getElementById('loginScreen').classList.remove('hidden'); document.getElementById('loginForm').reset(); });
@@ -901,7 +1075,7 @@
             let foundT = false, foundY = false;
             snaps.forEach(d => {
                 const t = d.data();
-                const card = `<div class="bg-white p-3 rounded shadow-sm border-l-4 border-blue-400"><p class="text-xs font-bold text-blue-800 uppercase mb-1">${t.subject}</p><p class="text-sm text-slate-600">${t.topic}</p></div>`;
+                const card = `<div class="bg-white p-3 md:p-4 rounded shadow-sm border-l-4 border-blue-400"><p class="text-xs font-bold text-blue-800 uppercase mb-1">${t.subject}</p><p class="text-sm text-slate-600">${t.topic}</p></div>`;
                 if(t.date === todayStr) { todayCont.innerHTML += card; foundT = true; }
                 if(t.date === yestStr) { yestCont.innerHTML += card; foundY = true; }
             });
@@ -928,7 +1102,6 @@
             const targetDate = document.getElementById('assignDate').value; const targetTime = document.getElementById('assignTime').value;
             const mode = document.getElementById('assignMode').value; const locLink = instEl.options[instEl.selectedIndex].getAttribute('data-location') || "";
             
-            // Clash Check Logic
             const q = query(collection(db, "classes"), where("teacherId", "==", teachEl.value), where("date", "==", targetDate), where("time", "==", targetTime));
             const clashSnaps = await getDocs(q);
             let hasClash = false; let clashReason = "";
@@ -962,7 +1135,6 @@
             const snaps = await getDocs(collection(db, "classes"));
             let todayArr = []; let otherArr = [];
             
-            // Inst Usernames mapping for student filtering
             let instUsernamesMap = {};
             if(currentUser.role === 'student') {
                 const instSnaps = await getDocs(query(collection(db, "users"), where("role", "==", "institution")));
@@ -983,21 +1155,21 @@
             });
 
             todayArr.forEach(c => {
-                let target = currentUser.role === 'teacher' ? c.institutionName : "Subject Teacher"; // Privacy logic applied
+                let target = currentUser.role === 'teacher' ? c.institutionName : "Subject Teacher"; 
                 let btn = '';
-                if (c.mode === 'Online') { btn = `<a href="${c.link}" target="_blank" class="block text-center mt-3 bg-blue-500 text-white text-xs font-bold py-2 rounded shadow hover:bg-blue-600">Join Meet</a>`; } 
-                else if (c.mode === 'Offline' && currentUser.role === 'teacher' && c.locationLink) { btn = `<a href="${c.locationLink}" target="_blank" class="block text-center mt-3 bg-green-500 text-white text-xs font-bold py-2 rounded shadow hover:bg-green-600"><i class="fas fa-map-marker-alt"></i> GO (Location)</a>`; } 
-                else { btn = `<div class="block text-center mt-3 bg-slate-200 text-slate-600 text-xs font-bold py-2 rounded">Offline Campus</div>`; }
+                if (c.mode === 'Online') { btn = `<a href="${c.link}" target="_blank" class="block w-full text-center mt-3 bg-blue-500 text-white text-xs font-bold py-2 rounded shadow hover:bg-blue-600">Join Meet</a>`; } 
+                else if (c.mode === 'Offline' && currentUser.role === 'teacher' && c.locationLink) { btn = `<a href="${c.locationLink}" target="_blank" class="block w-full text-center mt-3 bg-green-500 text-white text-xs font-bold py-2 rounded shadow hover:bg-green-600"><i class="fas fa-map-marker-alt"></i> GO (Location)</a>`; } 
+                else { btn = `<div class="block w-full text-center mt-3 bg-slate-200 text-slate-600 text-xs font-bold py-2 rounded">Offline Campus</div>`; }
                 
-                todayCont.innerHTML += `<div class="bg-white p-3 rounded shadow-sm border-l-4 border-indigo-500"><div class="flex justify-between"><h5 class="font-bold text-sm text-indigo-700">${c.time}</h5><span class="text-[10px] font-bold uppercase">${c.mode}</span></div><p class="font-bold text-sm">${target}</p><p class="text-xs text-slate-500">${c.subject} - ${c.portion}</p>${btn}</div>`;
+                todayCont.innerHTML += `<div class="bg-white p-3 md:p-4 rounded shadow-sm border-l-4 border-indigo-500"><div class="flex justify-between items-start"><h5 class="font-bold text-sm text-indigo-700">${c.time}</h5><span class="text-[10px] font-bold uppercase bg-slate-100 px-2 py-1 rounded">${c.mode}</span></div><p class="font-bold text-sm mt-2">${target}</p><p class="text-xs text-slate-500">${c.subject} - ${c.portion}</p>${btn}</div>`;
             });
             otherArr.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(c => {
-                let target = currentUser.role === 'teacher' ? c.institutionName : "Subject Teacher"; // Privacy logic applied
+                let target = currentUser.role === 'teacher' ? c.institutionName : "Subject Teacher"; 
                 let linkHtml = '';
-                if(c.mode === 'Online') { linkHtml = `<a href="${c.link}" target="_blank" class="text-blue-500 text-xs underline font-bold"><i class="fas fa-video"></i> Link</a>`; }
-                else if(c.mode === 'Offline' && currentUser.role === 'teacher' && c.locationLink) { linkHtml = `<a href="${c.locationLink}" target="_blank" class="text-green-600 text-xs underline font-bold"><i class="fas fa-map-marker-alt"></i> GO</a>`; }
-                else { linkHtml = `<span class="text-xs text-slate-400">Offline</span>`; }
-                otherBody.innerHTML += `<tr class="border-b"><td class="p-3 text-xs font-semibold">${c.date} <br><span class="text-slate-500">${c.time}</span></td><td class="p-3 font-bold">${target}</td><td class="p-3 text-sm">${c.subject}</td><td class="p-3 text-xs">${c.portion}</td><td class="p-3 text-xs uppercase font-bold mr-2">${c.mode} <br> ${linkHtml}</td></tr>`;
+                if(c.mode === 'Online') { linkHtml = `<a href="${c.link}" target="_blank" class="text-blue-500 text-xs underline font-bold block mt-1"><i class="fas fa-video"></i> Link</a>`; }
+                else if(c.mode === 'Offline' && currentUser.role === 'teacher' && c.locationLink) { linkHtml = `<a href="${c.locationLink}" target="_blank" class="text-green-600 text-xs underline font-bold block mt-1"><i class="fas fa-map-marker-alt"></i> GO</a>`; }
+                else { linkHtml = `<span class="text-xs text-slate-400 block mt-1">Offline</span>`; }
+                otherBody.innerHTML += `<tr class="border-b"><td class="p-3 text-xs font-semibold">${c.date} <br><span class="text-slate-500">${c.time}</span></td><td class="p-3 font-bold">${target}</td><td class="p-3 text-sm">${c.subject}</td><td class="p-3 text-xs">${c.portion}</td><td class="p-3 text-xs uppercase font-bold mr-2">${c.mode} ${linkHtml}</td></tr>`;
             });
         };
 
@@ -1005,7 +1177,7 @@
             const instSelect = document.getElementById('ex_inst');
             instSelect.innerHTML = '<option value="">-- Select Target Institution --</option>';
             const snaps = await getDocs(query(collection(db, "users"), where("role", "==", "institution")));
-            snaps.forEach(docSnap => { instSelect.innerHTML += `<option value="${docSnap.data().username}">${docSnap.data().name}</option>`; }); // Link exam to inst username
+            snaps.forEach(docSnap => { instSelect.innerHTML += `<option value="${docSnap.data().username}">${docSnap.data().name}</option>`; });
         }
 
         document.getElementById('assignExamForm').addEventListener('submit', async (e) => {
@@ -1042,15 +1214,12 @@
 
         window.publishExam = async (id, status) => { await updateDoc(doc(db, "exams", id), { published: status }); showAlert(status ? "Exam Results Published!" : "Results Hidden."); loadAdminExams(); };
 
-        // Mark Entry Logic
         window.openMarkModal = async (examId, instUsername, maxMarks) => {
             document.getElementById('me_examId').value = examId; document.getElementById('me_max').value = maxMarks;
             const tbody = document.getElementById('markEntryTableBody'); tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center">Loading students...</td></tr>';
             document.getElementById('markEntryModal').classList.remove('hidden');
 
-            // Fetch students of this inst
             const studentSnaps = await getDocs(query(collection(db, "users"), where("role", "==", "student"), where("instUsername", "==", instUsername)));
-            // Fetch existing marks for this exam
             const marksSnaps = await getDocs(query(collection(db, "marks"), where("examId", "==", examId)));
             let marksMap = {}; marksSnaps.forEach(m => { marksMap[m.data().studentId] = { val: m.data().marksObtained, docId: m.id }; });
 
@@ -1059,7 +1228,7 @@
                 const st = s.data(); const sId = s.id;
                 let existingMark = marksMap[sId] ? marksMap[sId].val : "";
                 let markDocId = marksMap[sId] ? marksMap[sId].docId : "";
-                tbody.innerHTML += `<tr class="border-b"><td class="p-3 font-semibold">${st.name}</td><td class="p-3 text-xs text-slate-500">@${st.username}</td><td class="p-3"><input type="number" data-sid="${sId}" data-sname="${st.name}" data-mid="${markDocId}" value="${existingMark}" class="mark-input border p-1 rounded w-full text-sm" placeholder="out of ${maxMarks}"></td></tr>`;
+                tbody.innerHTML += `<tr class="border-b"><td class="p-3 font-semibold">${st.name}</td><td class="p-3 text-xs text-slate-500 hidden sm:table-cell">@${st.username}</td><td class="p-3"><input type="number" data-sid="${sId}" data-sname="${st.name}" data-mid="${markDocId}" value="${existingMark}" class="mark-input border p-1 rounded w-full text-sm" placeholder="out of ${maxMarks}"></td></tr>`;
             });
             if(studentSnaps.empty) tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-slate-500">No students found for this institution.</td></tr>';
         };
@@ -1078,32 +1247,26 @@
             showAlert("Marks saved successfully!"); closeMarkModal();
         };
 
-        // Shared: View Exams & Marks
         async function loadExamsView() {
             if(!currentUser) return;
             document.getElementById('printReportUser').innerText = currentUser.name + (currentUser.role === 'institution' ? " (Institution View)" : " (Student View)");
             
             const tbody = document.getElementById('examsViewTableBody');
             const userColHeader = document.getElementById('examViewUserCol');
-            userColHeader.classList.toggle('hidden', currentUser.role === 'student'); // Hide student col for student himself
+            userColHeader.classList.toggle('hidden', currentUser.role === 'student'); 
             tbody.innerHTML = '';
 
             let targetInstUsername = currentUser.role === 'student' ? currentUser.instUsername : currentUser.username;
-
-            // Fetch published exams for this inst
             const examSnaps = await getDocs(query(collection(db, "exams"), where("instUsername", "==", targetInstUsername), where("published", "==", true)));
             if(examSnaps.empty) { tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">No exams published yet.</td></tr>'; return; }
 
             for (const docSnap of examSnaps.docs) {
                 const ex = docSnap.data();
-                
-                // If student, fetch only their mark. If inst, fetch all marks for this exam.
                 let marksQuery = currentUser.role === 'student' ? query(collection(db, "marks"), where("examId", "==", docSnap.id), where("studentId", "==", currentUser.id)) : query(collection(db, "marks"), where("examId", "==", docSnap.id));
                 const marksSnaps = await getDocs(marksQuery);
                 
                 if(marksSnaps.empty && currentUser.role === 'student') {
-                    // Exam exists but no marks entered for this student yet
-                    let linkHtml = ex.mode === 'Online' && ex.link ? `<a href="${ex.link}" target="_blank" class="text-blue-500 underline ml-2"><i class="fas fa-link"></i></a>` : '';
+                    let linkHtml = ex.mode === 'Online' && ex.link ? `<a href="${ex.link}" target="_blank" class="text-blue-500 underline ml-2 block mt-1"><i class="fas fa-link"></i> Link</a>` : '';
                     tbody.innerHTML += `<tr><td class="border p-3 text-xs">${ex.date}</td><td class="border p-3 font-bold text-slate-700">${ex.title} ${linkHtml}</td><td class="border p-3 text-center">${ex.maxMarks}</td><td class="border p-3 text-center">-</td><td class="border p-3 text-center"><span class="text-slate-400 text-xs">Pending</span></td></tr>`;
                 }
 
@@ -1111,7 +1274,7 @@
                     const mk = mSnap.data();
                     let passStatus = parseFloat(mk.marksObtained) >= parseFloat(ex.passMarks) ? `<span class="text-green-600 font-bold">PASS</span>` : `<span class="text-red-600 font-bold">FAIL</span>`;
                     let studentColHtml = currentUser.role === 'institution' ? `<td class="border p-3">${mk.studentName}</td>` : '';
-                    let linkHtml = ex.mode === 'Online' && ex.link ? `<a href="${ex.link}" target="_blank" class="text-blue-500 underline ml-2 no-print"><i class="fas fa-link"></i></a>` : '';
+                    let linkHtml = ex.mode === 'Online' && ex.link ? `<a href="${ex.link}" target="_blank" class="text-blue-500 underline ml-2 no-print block mt-1"><i class="fas fa-link"></i> Link</a>` : '';
                     
                     tbody.innerHTML += `<tr><td class="border p-3 text-xs">${ex.date}</td><td class="border p-3 font-bold text-slate-700">${ex.title} ${linkHtml}</td>${studentColHtml}<td class="border p-3 text-center">${ex.maxMarks}</td><td class="border p-3 text-center font-bold text-indigo-700">${mk.marksObtained}</td><td class="border p-3 text-center">${passStatus}</td></tr>`;
                 });
@@ -1142,7 +1305,7 @@
                     <div onclick="openDoubtThread('${d.id}')" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-3 cursor-pointer hover:border-purple-400 transition">
                         <div class="flex justify-between items-start mb-2">
                             <h4 class="font-bold text-slate-800">${d.subject} <span class="text-xs font-normal text-slate-500 ml-2">(${d.chapter})</span></h4>
-                            <span class="text-[10px] text-slate-400">${dDate}</span>
+                            <span class="text-[10px] text-slate-400 whitespace-nowrap ml-2">${dDate}</span>
                         </div>
                         <p class="text-sm text-slate-600 line-clamp-2">${d.question}</p>
                         <p class="text-[10px] text-purple-600 font-bold mt-2 text-right">- ${d.authorName} (${d.authorRole})</p>
@@ -1167,7 +1330,7 @@
             let dDate = new Date(d.date).toLocaleString('en-US', {dateStyle:'medium', timeStyle:'short'});
 
             let html = `
-                <div class="bg-white p-4 rounded-lg shadow-sm border border-purple-200 mb-6">
+                <div class="bg-white p-3 md:p-4 rounded-lg shadow-sm border border-purple-200 mb-6">
                     <p class="text-[10px] font-bold text-purple-600 mb-1">${d.subject} | ${d.chapter}</p>
                     <p class="text-md font-bold text-slate-800 mb-2">${d.question}</p>
                     <p class="text-[10px] text-slate-400">${d.authorName} &bull; ${dDate}</p>
@@ -1188,13 +1351,13 @@
                 let badge = (r.authorRole === 'admin' || r.authorRole === 'teacher') ? `<i class="fas fa-check-circle text-green-500 ml-1"></i>` : '';
                 let textHtml = r.text.startsWith('http') ? `<a href="${r.text}" target="_blank" class="text-blue-500 underline break-words">${r.text}</a>` : `<p class="text-sm text-slate-700 whitespace-pre-wrap">${r.text}</p>`;
                 repContainer.innerHTML += `
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-100 ml-4">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-100 ml-2 md:ml-4">
                         <p class="text-[10px] font-bold text-slate-500 mb-1">${r.authorName} ${badge} <span class="float-right font-normal">${rDate}</span></p>
                         ${textHtml}
                     </div>
                 `;
             });
-            content.scrollTop = content.scrollHeight; // Scroll to bottom
+            content.scrollTop = content.scrollHeight;
         }
 
         document.getElementById('replyDoubtForm').addEventListener('submit', async (e) => {
@@ -1205,7 +1368,6 @@
             document.getElementById('r_text').value = ''; loadDoubtThread(dId);
         });
 
-        // Admin Activity Report and Teacher Activity Report
         window.loadAdminActivityReport = async () => { 
             const tbody = document.getElementById('adminActivityTableBody'); const sDate = document.getElementById('filterStartDate').value; const eDate = document.getElementById('filterEndDate').value; const selIds = Array.from(document.querySelectorAll('.filter-teacher-cb:checked')).map(cb => cb.value);
             const snaps = await getDocs(collection(db, "classes")); tbody.innerHTML = ''; let count = 0;
@@ -1220,3 +1382,11 @@
     </script>
 </body>
 </html>
+```eof
+
+**വാട്സ്ആപ്പിൽ ഷെയർ ചെയ്യുമ്പോൾ ശ്രദ്ധിക്കേണ്ടത്:**
+വാട്സ്ആപ്പിൽ നിങ്ങൾ പഴയ ലിങ്ക് അയക്കുമ്പോൾ ആ പഴയ ഐക്കൺ (ലോഗോ) തന്നെ വീണ്ടും കാണിക്കുകയാണെങ്കിൽ, അത് വാട്സ്ആപ്പ് ഫോണിൽ സേവ് ചെയ്ത് വെച്ചിരിക്കുന്നതുകൊണ്ടാണ് (Cache). 
+
+അത് ഒഴിവാക്കി പുതിയ ലോഗോ വരാനായി നിങ്ങളുടെ ലിങ്കിന്റെ കൂടെ എപ്പോഴും `/?v=1` എന്ന് ചേർത്ത് ഒരാൾക്ക് മെസ്സേജ് അയച്ചു നോക്കുക. അതായത് ഈ ലിങ്ക് അയക്കുക: **`[https://delta-accademy.netlify.app/?v=1](https://delta-accademy.netlify.app/?v=1)`** 
+
+അങ്ങനെ അയക്കുമ്പോൾ ആ പഴയ ലോഗോ മാറി നിങ്ങളുടെ പുതിയ ലോഗോ (Delta Academy) കൃത്യമായി അവിടെ കാണാൻ സാധിക്കും.
